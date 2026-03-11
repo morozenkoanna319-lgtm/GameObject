@@ -83,12 +83,20 @@ public class GameObject implements Cloneable, Icon {
 
     }
 
-    public boolean canAttack() {
+    public boolean canAttack(float currentTime) {
         return false;
     }
 
-    public void attack() {
+    public void attack(GameObject target, float currentTime) {
 
+    }
+
+    public float distanceTo(GameObject other) {
+        return -1;
+    }
+
+    public float distanceSqTo(GameObject other) {
+        return -1;
     }
 
     protected void draw(Graphics g) {

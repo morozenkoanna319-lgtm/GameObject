@@ -80,6 +80,14 @@ public class Engine {
     public void moveTowards(GameObject attaker, GameObject target) {
     }
 
+    public List<GameObject> getEnemiesFor(int faction) {
+        return List.of();
+    }
+
+    public GameObject findNearestEnemy(GameObject self, float range) {
+        return new GameObject();
+    }
+
     public List<GameObject> getObjects() {
         return new ArrayList<>(objects);
     }
