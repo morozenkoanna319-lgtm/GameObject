@@ -62,7 +62,7 @@ public class GameObject implements Cloneable, Icon {
         x += (int) (speed * dt);
     }
 
-    public void moveTowards(GameObject target) {
+    public void moveTowards(GameObject target, float dt) {
         float dirX = target.x - this.x;
         float dirY = target.y - this.y;
         float distance = (float) Math.sqrt(dirX * dirX + dirY * dirY);
