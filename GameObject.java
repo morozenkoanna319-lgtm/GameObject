@@ -93,11 +93,15 @@ public class GameObject implements Cloneable, Icon {
     }
 
     public float distanceTo(GameObject other) {
-        return -1;
+        float dx = this.x - other.x;
+        float dy = this.y - other.y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
     public float distanceSqTo(GameObject other) {
-        return -1;
+        float dx = this.x - other.x;
+        float dy = this.y - other.y;
+        return dx * dx + dy * dy;
     }
 
     protected void draw(Graphics g) {
