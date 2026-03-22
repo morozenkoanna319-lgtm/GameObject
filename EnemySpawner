@@ -1,0 +1,37 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class EnemySpawner extends GameObject {
+
+    private final float spawnY = 150;
+    private final float spawnX = 300;
+    private final int intervalMs = 10000;
+
+    public EnemySpawner() {
+        // таймер спавна
+        Timer spawnTimer = new Timer(intervalMs, e -> spawnUnit());
+        spawnTimer.start();
+    }
+
+    private void spawnUnit() {
+        Engine engine = Engine.getInstance();
+        UnitGunner unit = new UnitGunner();
+        // пока что спавн unitgunner, потом поменять на врага
+
+        // появляется справа
+        unit.setX(engine.getScreenWidth());
+        unit.setY(spawnY);
+        unit.setX(spawnX);
+
+        engine.spawnObject(unit);
+        System.out.println("Враг заспавнен через таймер!");
+    }
+
+    @Override
+    protected void update(float dt) {
+    }
+
+    @Override
+    protected void draw(Graphics g) {
+    }
+}
