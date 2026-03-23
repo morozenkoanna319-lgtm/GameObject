@@ -14,15 +14,8 @@ public class Controls extends JPanel {
             // under construction
         }));
 
-        // тип с дубинкой
-        add(new Button("Spawn Хулиганчик", new Хулиган(), () -> {
-            game.spawnObject(new Хулиган());
-        }));
-
         add(new Button("Spawn Tank", new UnitDinoRider(), () -> {
-            System.out.println("spawn Tank");
             // under construction
-            game.spawnObject(new Arrow(10, 100, -40, 400));
         }));
     }
 }
