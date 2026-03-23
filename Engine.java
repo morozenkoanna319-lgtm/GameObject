@@ -40,7 +40,23 @@ public class Engine {
     }
 
     public void spawnObject() {
-    }
+        // Случайный тип объекта (например, 0 или 1)
+        int type = random.nextInt(2);
+
+        // Случайные координаты
+        float x = random.nextInt(screenWidth);
+        float y = random.nextInt(screenHeight);
+
+        // Случайный цвет
+        Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+
+        // Создаём объект с заданными параметрами
+        GameObject newObject = new GameObject(
+                -1, x, y, 30, 100, color, type // размер и скорость можно сделать константами или тоже случайными
+        );
+
+        spawnObject(newObject); // добавляем в список
+    }ыы
 
     public void spawnObject(GameObject gameObject) {
         objects.add(gameObject);
@@ -72,10 +88,17 @@ public class Engine {
                 // копия объекта создаётся
                 GameObject newObject = new GameObject(
                         -1,
+ feature/engine-class
+                        elem.getX(),
+                        elem.getY(),
+                        100,
+                        elem.getSpeed()
+
                     elem.getX(),
                     elem.getY(),
                     100,
                     elem.getSpeed()
+ main
                 );
 
                 // она добавляется в список
@@ -96,7 +119,7 @@ public class Engine {
             }
             System.out.println("Общий спавн завершен");
         });
-        
+
         spawnThread.start(); // запуск потока
     }
 
@@ -150,4 +173,8 @@ public class Engine {
     }
 
     public float getGameTime() { return gameTime; }
+ feature/engine-class
 }
+
+}
+ main
