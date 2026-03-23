@@ -40,6 +40,19 @@ public class Engine {
     }
 
     public void spawnObject() {
+        // Случайные координаты
+        float x = random.nextInt(screenWidth);
+        float y = random.nextInt(screenHeight);
+
+        // Случайный цвет
+        Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+
+        // Создаём объект с заданными параметрами
+        GameObject newObject = new GameObject(
+                -1, x, y, 30, 100, color
+        );
+
+        spawnObject(newObject); // добавляем в список
     }
 
     public void spawnObject(GameObject gameObject) {
