@@ -38,7 +38,7 @@ public class GameView extends JPanel implements MouseListener {
         float clickX = e.getX();
         float clickY = e.getY();
 
-        // Ищем всех живых археров на сцене
+        // Ищем всех живых лучников на сцене
         List<GameObject> objects = engine.getObjects();
         UnitArcher nearestArcher = null;
         float minDist = Float.MAX_VALUE;
@@ -54,7 +54,7 @@ public class GameView extends JPanel implements MouseListener {
             }
         }
 
-        // Если архер найден — стреляем в точку клика
+        // Если лучник найден — стреляем в точку клика
         if (nearestArcher != null) {
             // Проверяем кулдаун
             if (nearestArcher.canAttack(engine.getGameTime()) || true) { // force shoot

@@ -114,7 +114,7 @@ public class UnitArcher extends GameObject {
         }
     }
     /**
-     * Принудительная стрельба в указанную точку (для клика мышью)
+     *  Стрельба в указанную точку (клик мышью)
      */
     public void shootAtPosition(float targetX, float targetY, Engine engine) {
         if (!isAlive()) return;

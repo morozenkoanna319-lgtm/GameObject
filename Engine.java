@@ -154,8 +154,6 @@ public class Engine {
         }
         return nearest;
     }
-// ===== ДОБАВИТЬ ЭТОТ МЕТОД В КЛАСС Engine =====
-
     /**
      * Проверка коллизий: стрелы ↔ башни
      */
@@ -186,9 +184,6 @@ public class Engine {
                     tower.setAlive(false);  // Уничтожаем башню
                     arrow.setAlive(false);  // Удаляем стрелу
 
-                    // Опционально: добавляем эффект/звук
-                    // spawnExplosion(tower.getX(), tower.getY());
-
                     System.out.println("💥 Arrow hit Tower! Tower destroyed.");
                     break; // одна стрела — одна башня
                 }
@@ -205,7 +200,7 @@ public class Engine {
         float arrowX = arrow.getX();
         float arrowY = arrow.getY();
 
-        // Позиция и размеры башни (адаптируйте под ваш код рисования)
+        // Позиция и размеры башни
         float towerX = tower.getX();      // центр/основание по X
         float towerY = tower.getY();      // основание по Y
         float towerWidth = 120f;          // ширина башни (подберите по факту)

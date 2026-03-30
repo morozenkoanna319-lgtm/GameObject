@@ -7,7 +7,7 @@ public class Tower extends GameObject {
 
     private int heath = 200;
     private float spawnTime = -1;
-    private float lifetime = 10.0f; // башня живёт 10 секунд
+    private float lifetime = 10.0f;
 
 
 
