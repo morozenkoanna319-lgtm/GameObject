@@ -1,21 +1,55 @@
 import java.awt.*;
+import java.util.List;
 
+/**
+ * Стрела с баллистикой и коллизией.
+ * Оптимизирован: убраны лишние операции, добавлены проверки.
+ * 
+ * By AmericanCoolBoyUSA777
+ */
 public class Arrow extends GameObject {
     private float vx, vy;
     private static final float GRAVITY = 800f;
+    private GameObject shooter; // кто выпустил
     
     public Arrow(float startX, float startY, float angleDeg, float speed) {
         super(-2, startX, startY, 30, speed);
         float angleRad = (float) Math.toRadians(angleDeg);
         this.vx = speed * (float) Math.cos(angleRad);
         this.vy = speed * (float) Math.sin(angleRad);
+        this.attackDamage = 20;
+    }
+    
+    public void setShooter(GameObject shooter) {
+        this.shooter = shooter;
     }
 
     @Override
     public void update(float dt) {
+        // перемещение с учётом гравитации
         x += vx * dt;
         y += vy * dt;
         vy += GRAVITY * dt;
+        
+        // удаление стрелы при вылете за границы экрана
+        if (x < -100 || x > engine.getScreenWidth() + 100 || 
+            y < -100 || y > engine.getScreenHeight() + 100) {
+            isAlive = false;
+            return;
+        }
+        
+        // проверка столкновений с другими объектами
+        List<GameObject> objects = engine.getObjects();
+        for (GameObject obj : objects) {
+            if (obj == this || !obj.isAlive()) continue;
+            if (obj.getFraction() == fraction) continue;
+            
+            if (Engine.getInstance().collisionCircle(this, obj)) {
+                obj.takeDamage(attackDamage);
+                isAlive = false;
+                break;
+            }
+        }
     }
 
     @Override
@@ -26,6 +60,7 @@ public class Arrow extends GameObject {
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(2));
 
+        // определение направления полёта
         float angle = (float) Math.atan2(vy, vx);
         int length = 35;
 
@@ -36,6 +71,7 @@ public class Arrow extends GameObject {
         
         g2d.drawLine(startX, startY, endX, endY);
         
+        // отрисовка наконечника
         int tipSize = 8;
         int backX = (int) (endX - tipSize * 0.5 * Math.cos(angle));
         int backY = (int) (endY - tipSize * 0.5 * Math.sin(angle));
@@ -52,35 +88,33 @@ public class Arrow extends GameObject {
         };
         g2d.fillPolygon(xPoints, yPoints, 3);
         
-        int featherLength = 8;
+        // отрисовка оперения
         float perpX = (float) Math.sin(angle);
         float perpY = (float) -Math.cos(angle);
-
         g2d.drawLine(startX, startY,
-                (int) (startX - featherLength * perpX),
-                (int) (startY - featherLength * perpY));
+                (int) (startX - 8 * perpX),
+                (int) (startY - 8 * perpY));
         g2d.drawLine(startX, startY,
-                (int) (startX + featherLength * perpX),
-                (int) (startY + featherLength * perpY));
+                (int) (startX + 8 * perpX),
+                (int) (startY + 8 * perpY));
     }
 
-    public static float calculateArrowAngle(float startX, float startY, float targetX, float targetY, float speed) {
+    /**
+     * Расчёт угла для баллистической траектории.
+     * @return угол в градусах
+     */
+    public static float calculateArrowAngle(float startX, float startY, 
+                                             float targetX, float targetY, 
+                                             float speed) {
         float dx = targetX - startX;
         float dy = targetY - startY;
 
         if (dx == 0) {
             if (dy == 0) return 0;
-            if (dy > 0) {
-                if (speed * speed >= 2 * GRAVITY * dy) {
-                    return -90f;
-                }
-            } else {
-                return 90f;
-            }
+            return dy > 0 ? -90f : 90f;
         }
 
         float angleRad = getAngleRad(speed, dx, dy);
-
         return (float) Math.toDegrees(angleRad);
     }
 
@@ -89,17 +123,22 @@ public class Arrow extends GameObject {
         float discriminant = dx * dx - 4 * A * (A - dy);
 
         if (discriminant < 0) {
-            throw new RuntimeException("target is unattainable");
+            // стрельба по прямой, если баллистика не достигает цели
+            return (float) Math.atan2(dy, dx);
         }
 
         float sqrtD = (float) Math.sqrt(discriminant);
         float u1 = (-dx + sqrtD) / (2 * A);
         float u2 = (-dx - sqrtD) / (2 * A);
-
         float u = Math.abs(u1) < Math.abs(u2) ? u1 : u2;
-
+        
         float cosTheta = Math.signum(dx) / (float) Math.sqrt(1 + u * u);
         float sinTheta = u * cosTheta;
         return (float) Math.atan2(sinTheta, cosTheta);
+    }
+    
+    @Override
+    public void takeDamage(int damage) {
+        // стрелы неуязвимы
     }
 }

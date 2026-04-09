@@ -1,15 +1,38 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Background {
+    private List<Tree> trees;
+    private Random rand;
+
+    public Background() {
+        trees = new ArrayList<>();
+        rand = new Random();
+        generateTrees();
+    }
+
+    private void generateTrees() {
+        // Создаем 5 деревьев с разными позициями
+        trees.add(new Tree(1, 100, 450, false));   // лиственное слева
+        trees.add(new Tree(2, 300, 420, true));    // ель слева-центр
+        trees.add(new Tree(3, 500, 460, false));   // лиственное центр
+        trees.add(new Tree(4, 700, 430, true));    // ель справа-центр
+        trees.add(new Tree(5, 900, 440, false));   // лиственное справа
+    }
 
     public void draw(Graphics g, int panelWidth, int panelHeight) {
         Graphics2D g2d = (Graphics2D) g;
 
         Stroke originalStroke = g2d.getStroke();
         Color originalColor = g2d.getColor();
+
         drawSky(g2d, panelWidth, panelHeight);
         drawClouds(g2d, panelWidth, panelHeight);
         drawGround(g2d, panelWidth, panelHeight);
+        drawTrees(g2d, panelHeight);
+
         g2d.setStroke(originalStroke);
         g2d.setColor(originalColor);
     }
@@ -85,5 +108,11 @@ public class Background {
         g2d.setColor(Color.BLACK);
         g2d.drawPolygon(xPoints, yPoints, 8);
         g2d.setColor(new Color(105, 105, 105));
+    }
+
+    private void drawTrees(Graphics2D g2d, int panelHeight) {
+        for (Tree tree : trees) {
+            tree.draw(g2d);
+        }
     }
 }

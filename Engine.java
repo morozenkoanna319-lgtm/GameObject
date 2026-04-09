@@ -24,9 +24,6 @@ public class Engine {
         }
         return engine;
     }
-    public void cleanupDeadObjects() {
-        objects.removeIf(obj -> !obj.isAlive());
-    }
 
     public void update(float deltaTime) {
         enemySpawnTimer += deltaTime;
@@ -45,8 +42,12 @@ public class Engine {
     }
 
     public void draw(Graphics g) {
-        for (GameObject object: objects) {
-            object.draw(g);
+        synchronized (objects) {
+            for (GameObject object : objects) {
+                if (object.isAlive()) {
+                    object.draw(g);
+                }
+            }
         }
     }
 
@@ -67,10 +68,16 @@ public class Engine {
     }
 
     public void spawnObject(GameObject gameObject) {
-        objects.add(gameObject);
+        if (gameObject != null) {
+            synchronized (objects) {
+                objects.add(gameObject);
+            }
+        }
     }
 
     public boolean collisionAABB(GameObject a, GameObject b) {
+        if (a == null || b == null) return false;
+
         float halfA = a.getSize() / 2f;
         float halfB = b.getSize() / 2f;
 
@@ -88,6 +95,8 @@ public class Engine {
     }
 
     public boolean collisionCircle(GameObject a, GameObject b) {
+        if (a == null || b == null) return false;
+
         float radiusA = a.getSize() / 2f;
         float radiusB = b.getSize() / 2f;
 
@@ -107,11 +116,13 @@ public class Engine {
                 // копия объекта создаётся
                 GameObject newObject = new GameObject(
                         -1,
-                    elem.getX(),
-                    elem.getY(),
-                    100,
-                    elem.getSpeed()
+                        elem.getX(),
+                        elem.getY(),
+                        100,
+                        elem.getSpeed(),
+                        elem.getColor()
                 );
+                newObject.setFraction(elem.getFraction());
 
                 // она добавляется в список
                 synchronized (objects) {
@@ -131,105 +142,72 @@ public class Engine {
             }
             System.out.println("Общий спавн завершен");
         });
-        
+
         spawnThread.start(); // запуск потока
     }
 
-    // supplier of Pythagoras
-    public void moveTowards(GameObject attaker, GameObject target) {
+    // supplier of Pythagoras - движение к цели
+    public void moveTowards(GameObject attacker, GameObject target) {
+        if (attacker == null || target == null) return;
+        if (!attacker.isAlive() || !target.isAlive()) return;
+
+        float dx = target.getX() - attacker.getX();
+        float dy = target.getY() - attacker.getY();
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 0.01f) {
+            float speed = attacker.getSpeed();
+            float moveX = (dx / distance) * speed * deltaTime;
+            float moveY = (dy / distance) * speed * deltaTime;
+
+            attacker.setX(attacker.getX() + moveX);
+            attacker.setY(attacker.getY() + moveY);
+        }
     }
 
     public List<GameObject> getEnemiesFor(int faction) {
-        return List.of();
+        List<GameObject> enemies = new ArrayList<>();
+        synchronized (objects) {
+            for (GameObject obj : objects) {
+                if (obj.isAlive() && obj.getFraction() != faction) {
+                    enemies.add(obj);
+                }
+            }
+        }
+        return enemies;
     }
 
     public GameObject findNearestEnemy(GameObject self, float range) {
         if (self == null) return null;
+
         GameObject nearest = null;
         float rangeSq = range * range;
-        for (GameObject obj : objects) {
-            if (obj != self && obj.isAlive() && obj.getFraction() != self.getFraction()) {
-                float distSq = self.distanceSqTo(obj);
-                System.out.println(obj + " " + distSq + " < " + rangeSq);
-                if (distSq < rangeSq) {
-                    rangeSq = distSq;
-                    nearest = obj;
+        float minDistanceSq = rangeSq;
+
+        synchronized (objects) {
+            for (GameObject obj : objects) {
+                if (obj != self && obj.isAlive() && obj.getFraction() != self.getFraction()) {
+                    float distSq = self.distanceSqTo(obj);
+                    if (distSq < minDistanceSq) {
+                        minDistanceSq = distSq;
+                        nearest = obj;
+                    }
                 }
             }
         }
         return nearest;
     }
-    /**
-     * Проверка коллизий: стрелы ↔ башни
-     */
-    private void checkArrowTowerCollisions() {
-        List<GameObject> arrows = new ArrayList<>();
-        List<GameObject> towers = new ArrayList<>();
-
-        // Разделяем объекты по типам
-        for (GameObject obj : objects) {
-            if (obj instanceof Arrow && obj.isAlive()) {
-                arrows.add(obj);
-            }
-            if (obj instanceof Tower && obj.isAlive()) {
-                towers.add(obj);
-            }
-        }
-
-        // Проверяем каждую стрелу против каждой башни
-        for (GameObject arrowObj : arrows) {
-            Arrow arrow = (Arrow) arrowObj;
-
-            for (GameObject towerObj : towers) {
-                Tower tower = (Tower) towerObj;
-
-                // 🔥 Проверка коллизии (круг-прямоугольник)
-                if (checkArrowTowerCollision(arrow, tower)) {
-                    // 💥 Попадание!
-                    tower.setAlive(false);  // Уничтожаем башню
-                    arrow.setAlive(false);  // Удаляем стрелу
-
-                    System.out.println("💥 Arrow hit Tower! Tower destroyed.");
-                    break; // одна стрела — одна башня
-                }
-            }
-        }
-    }
-
-    /**
-     * Проверка коллизии стрелы и башни
-     * @return true если произошло попадание
-     */
-    private boolean checkArrowTowerCollision(Arrow arrow, Tower tower) {
-        // Позиция стрелы
-        float arrowX = arrow.getX();
-        float arrowY = arrow.getY();
-
-        // Позиция и размеры башни
-        float towerX = tower.getX();      // центр/основание по X
-        float towerY = tower.getY();      // основание по Y
-        float towerWidth = 120f;          // ширина башни (подберите по факту)
-        float towerHeight = 300f;         // высота башни
-
-        // Башня рисуется от (towerX - width/2, towerY - height) до (towerX + width/2, towerY)
-        float towerLeft = towerX - towerWidth / 2;
-        float towerRight = towerX + towerWidth / 2;
-        float towerTop = towerY - towerHeight;
-        float towerBottom = towerY;
-
-        // Проверка: попадает ли точка стрелы в прямоугольник башни
-        return arrowX >= towerLeft &&
-                arrowX <= towerRight &&
-                arrowY >= towerTop &&
-                arrowY <= towerBottom;
-    }
 
     public List<GameObject> getObjects() {
-        return new ArrayList<>(objects);
+        synchronized (objects) {
+            return new ArrayList<>(objects);
+        }
     }
 
     public void clearObjects() {
-        objects.clear();
+        synchronized (objects) {
+            objects.clear();
+        }
     }
 
     public int getScreenWidth() {
@@ -248,11 +226,13 @@ public class Engine {
         this.screenWidth = screenWidth;
     }
 
+
     public float getGameTime() { return gameTime; }
     
     private void spawnEnemyMob() {
         GameObject enemy = new GameObject(-1, 1600,800, 50, -120f);
         enemy.setFraction(1);
         spawnObject(enemy);
+
     }
 }

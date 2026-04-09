@@ -1,24 +1,109 @@
 import java.awt.*;
+import java.util.List;
 
-// create by 21099-vmode
-// edit by vadhub
-// edit by Qwen && Deepseek
-
+/**
+ * Всадник на динозавре: спавнится, идёт к башне,
+ * останавливается и атакует, пока башня не разрушится.
+ *
+ * by Bebron28 & AmericanCoolBoyUSA777
+ */
 public class UnitDinoRider extends GameObject {
 
+    private GameObject currentTarget;
+
+    // настройки динозавра (сильнее лучника)
+    private static final float DINO_SPEED = 4f;
+    private static final float DINO_ATTACK_RANGE = 300f;
+    private static final float DINO_ATTACK_COOLDOWN = 1.5f;
+    private static final int DINO_DAMAGE = 40;
+    private static final int DINO_HEALTH = 200;
+    private static final float SPEAR_SPEED = 600f;
+
+    // КОНСТРУКТОР БЕЗ ПАРАМЕТРОВ ДЛЯ СПАВНА ЧЕРЕЗ РЕФЛЕКСИЮ
     public UnitDinoRider() {
+        this.fraction = 2;
     }
 
     public UnitDinoRider(int id, float x, float y, int size, float speed) {
-        super(id, x, y, size, speed, Color.BLACK);
+        super(id, x, y, size, DINO_SPEED, new Color(100, 180, 100));
+        attackRange = DINO_ATTACK_RANGE;
+        attackCooldown = DINO_ATTACK_COOLDOWN;
+        lastAttackTime = -5f;
+        attackDamage = DINO_DAMAGE;
+        health = DINO_HEALTH;
+        fraction = 2;
     }
 
+    @Override
+    public void update(float deltaTime) {
+        if (!isAlive) return;
+
+        // выбор цели, если её нет или она мертва
+        if (currentTarget == null || !currentTarget.isAlive()) {
+            currentTarget = findTower();
+        }
+
+        if (currentTarget != null) {
+            float dist = distanceTo(currentTarget);
+
+            if (dist > attackRange) {
+                // движение к башне
+                moveTowards(currentTarget, deltaTime);
+            } else {
+                // атака в радиусе поражения
+                if (canAttack(engine.getGameTime())) {
+                    throwSpearAt(currentTarget);
+                    lastAttackTime = engine.getGameTime();
+                }
+            }
+        }
+    }
+
+    /**
+     * Поиск башни на карте.
+     */
+    private GameObject findTower() {
+        List<GameObject> objects = engine.getObjects();
+        for (GameObject obj : objects) {
+            if (obj == null || !obj.isAlive()) continue;
+            if (obj.getFraction() == fraction) continue;
+
+            // проверка по имени класса (Tower, Tower67 и т.д.)
+            String className = obj.getClass().getSimpleName();
+            if (className.contains("Tower")) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Бросок копья по цели.
+     */
+    private void throwSpearAt(GameObject target) {
+        float angle = Arrow.calculateArrowAngle(x, y, target.getX(), target.getY(), SPEAR_SPEED);
+        Arrow spear = new Arrow(x, y, angle, SPEAR_SPEED);
+        spear.setAttackDamage(attackDamage);
+        spear.setFraction(fraction);
+        engine.spawnObject(spear);
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            health = 0;
+            isAlive = false;
+            System.out.println("🦖 Всадник на динозавре убит!");
+        }
+    }
+
+    @Override
     public void draw(Graphics g) {
         int x = (int) this.x;
         int y = (int) this.y;
-        // масштабный коэффициент: базовый размер принят за 100
         float k = this.size / 100.0f;
-        if (k <= 0) k = 1.0f; // защита от нулевого размера
+        if (k <= 0) k = 1.0f;
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -113,7 +198,30 @@ public class UnitDinoRider extends GameObject {
                 Math.round(y - 5 * k)
         };
         g2.fillPolygon(xPoints, yPoints, 3);
+
+        // полоска здоровья
+        drawHealthBar(g2, x, y, k);
     }
+
+    private void drawHealthBar(Graphics2D g2d, int x, int y, float k) {
+        int barWidth = 80;
+        int barHeight = 8;
+        int barX = Math.round(x + 10 * k);
+        int barY = Math.round(y - 15 * k);
+
+        g2d.setColor(Color.RED);
+        g2d.fillRect(barX, barY, barWidth, barHeight);
+
+        g2d.setColor(Color.GREEN);
+        int healthPercent = (int) ((float) health / DINO_HEALTH * barWidth);
+        healthPercent = Math.max(0, Math.min(barWidth, healthPercent));
+        g2d.fillRect(barX, barY, healthPercent, barHeight);
+
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
+        g2d.drawRect(barX, barY, barWidth, barHeight);
+    }
+
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         this.x = x;

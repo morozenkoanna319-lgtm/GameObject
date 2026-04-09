@@ -3,35 +3,47 @@ import javax.swing.*;
 
 public class EnemySpawner extends GameObject {
 
-    private final float spawnY = 150;
-    private final float spawnX = 300;
-    private final int intervalMs = 10000;
+    private static final int SPAWN_INTERVAL_MS = 10000; // 10 секунд
+    private Engine engine;
 
     public EnemySpawner() {
+        engine = Engine.getInstance();
+
         // таймер спавна
-        Timer spawnTimer = new Timer(intervalMs, e -> spawnUnit());
+        Timer spawnTimer = new Timer(SPAWN_INTERVAL_MS, e -> spawnUnit());
         spawnTimer.start();
     }
 
     private void spawnUnit() {
-        Engine engine = Engine.getInstance();
-        UnitGunner unit = new UnitGunner();
-        // пока что спавн unitgunner, потом поменять на врага
+        if (engine == null) {
+            engine = Engine.getInstance();
+            if (engine == null) {
+                System.err.println("Engine не найден!");
+                return;
+            }
+        }
 
-        // появляется справа
-        unit.setX(engine.getScreenWidth());
-        unit.setY(spawnY);
+        UnitGunner unit = new UnitGunner();
+
+        // Спавн у ПРАВОГО края экрана
+        float spawnX = engine.getScreenWidth() - 50; // Отступ 50px от правого края
+        float spawnY = 300; // Фиксированная Y координата, или можно рандомную
+
         unit.setX(spawnX);
+        unit.setY(spawnY);
+        unit.setEngine(engine);
 
         engine.spawnObject(unit);
-        System.out.println("Враг заспавнен через таймер!");
+        System.out.println("🎮 Враг заспавнен у правого края! X=" + spawnX + ", Y=" + spawnY);
     }
 
     @Override
-    protected void update(float dt) {
+    public void update(float dt) {
+        // Спавнеру не нужно обновление
     }
 
     @Override
-    protected void draw(Graphics g) {
+    public void draw(Graphics g) {
+        // Спавнер ничего не рисует
     }
 }
