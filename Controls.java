@@ -1,27 +1,57 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Controls extends JPanel {
+/**
+ * Главный класс игры.
+ * Исправлено: башня теперь корректно создаётся посередине экрана.
+ *
+ * By AmericanCoolBoyUSA777
+ */
+public class Main {
 
-    public Controls(Engine engine) {
-        setLayout(new FlowLayout());
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Engine engine = Engine.getInstance();
 
-        add(new Button("Spawn Base", new GameObject(), () -> {
-            System.out.println("spawn Base");
-            // under construction
-        }));
+            // координаты башни
+            int towerX = engine.getScreenWidth() / 2 + 200;
+            int towerY = engine.getScreenHeight() - 180;
 
-        add(new Button("Spawn Archer", new UnitArcher(), () -> {
-            UnitArcher archer = new UnitArcher(1, 50, 800, 50, 500);
-            archer.setFraction(1);
-            archer.setAttackRange(100);
-            archer.setAttackDamage(0);
-            engine.spawnObject(archer);
-            System.out.println("Archer spawned - will stop and stand");
-        }, 90));
+            // создание башни через динамическую загрузку класса
+            try {
+                Class<?> towerClass = Class.forName("Tower");
+                GameObject tower = (GameObject) towerClass
+                        .getConstructor(int.class, float.class, float.class, int.class, float.class)
+                        .newInstance(1, (float) towerX, (float) towerY, 100, 0f);
+                tower.setFraction(2);
+                engine.spawnObject(tower);
+                System.out.println("Башня создана на позиции: " + towerX + ", " + towerY);
+            } catch (Exception e) {
+                // заглушка на случай отсутствия класса Tower
+                System.err.println("Класс Tower не найден, создаём заглушку");
+                GameObject dummyTower = new GameObject(1, towerX, towerY, 100, 0f, Color.GRAY);
+                dummyTower.setFraction(2);
+                dummyTower.setHealth(200);
+                engine.spawnObject(dummyTower);
+            }
 
-        add(new Button("Spawn Tank", new UnitDinoRider(), () -> {
-            // under construction
-        }, 90));
+            // ========== ДОБАВЛЯЕМ СПАВНЕР ВРАГОВ ==========
+            // Создаём спавнер
+            EnemySpawner enemySpawner = new EnemySpawner();
+            // Добавляем спавнер в engine (чтобы он жил в игровом мире)
+            engine.spawnObject(enemySpawner);
+            System.out.println("EnemySpawner добавлен в игру!");
+            // ============================================
+
+            GameView gameView = new GameView(engine);
+            JFrame frame = new JFrame("Tower Battle - Archer Defense");
+            frame.setSize(engine.getScreenWidth(), engine.getScreenHeight());
+            frame.setLayout(new BorderLayout());
+            frame.add(gameView, BorderLayout.CENTER);
+            frame.add(new Controls(engine), BorderLayout.SOUTH);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }
