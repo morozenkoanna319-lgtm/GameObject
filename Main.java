@@ -4,8 +4,15 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
+        // Запускаем меню
         SwingUtilities.invokeLater(() -> {
-            // ЗАПУСК ВАЛЮТЫ
+            new MainMenu();
+        });
+    }
+
+    // ЭТОТ МЕТОД ЗАПУСКАЕТ ИГРУ (вызывается из меню)
+    public static void startGame() {
+        SwingUtilities.invokeLater(() -> {
             CurrencyManager.getInstance();
 
             Engine engine = Engine.getInstance();
