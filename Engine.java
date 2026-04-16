@@ -226,7 +226,7 @@ public class Engine {
 
 
     public float getGameTime() { return gameTime; }
-    
+
     private void spawnEnemyMob() {
         GameObject enemy = new GameObject(-1, 1600,800, 50, -120f);
         enemy.setFraction(1);
