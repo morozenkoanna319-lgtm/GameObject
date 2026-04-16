@@ -8,15 +8,21 @@ public class Controls extends JPanel {
     public Controls(Engine game) {
         this.engine = game;
         this.currency = CurrencyManager.getInstance();
+
         setLayout(new FlowLayout());
 
         // Кнопка BaseUnit - 3 у.к.
-        add(new Button("Spawn Base", new GameObject() /* under construction */, () -> {
+        add(new Button("Spawn BaseUnit", new BaseUnit(), () -> {
             if (currency.spend(3)) {
-                System.out.println("spawn Base");
-                // under construction
+                BaseUnit baseUnit = new BaseUnit();
+                baseUnit.setFraction(0);
+                baseUnit.setX(100);
+                baseUnit.setY(game.getScreenHeight() - 150);
+                baseUnit.setSize(90);
+                baseUnit.setEngine(game);
+                game.spawnObject(baseUnit);
             } else {
-                System.out.println(" Не хватает валюты! Нужно 3 у.к.");
+                System.out.println("Не хватает валюты! Нужно 3 у.к.");
             }
         }));
 
@@ -33,11 +39,11 @@ public class Controls extends JPanel {
                 unitArcher.setDirection(1);
                 game.spawnObject(unitArcher);
             } else {
-                System.out.println(" Не хватает валюты! Нужно 5 у.к.");
+                System.out.println("Не хватает валюты! Нужно 5 у.к.");
             }
         }));
 
-        // Кнопка Tank - 7 у.к.
+        // Кнопка Tank (DinoRider) - 7 у.к.
         add(new Button("Spawn Tank", new UnitDinoRider(), () -> {
             if (currency.spend(7)) {
                 UnitDinoRider unitDinoRider = new UnitDinoRider();
@@ -49,7 +55,7 @@ public class Controls extends JPanel {
                 unitDinoRider.setDirection(1);
                 game.spawnObject(unitDinoRider);
             } else {
-                System.out.println(" Не хватает валюты! Нужно 7 у.к.");
+                System.out.println("Не хватает валюты! Нужно 7 у.к.");
             }
         }));
     }
