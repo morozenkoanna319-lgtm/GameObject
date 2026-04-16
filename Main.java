@@ -1,19 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Главный класс игры.
- * Исправлено: башня теперь корректно создаётся посередине экрана.
- * <p>
- * By AmericanCoolBoyUSA777
- */
 public class Main {
 
     public static void main(String[] args) {
+        // Запускаем меню
         SwingUtilities.invokeLater(() -> {
+            new MainMenu();
+        });
+    }
+
+    // ЭТОТ МЕТОД ЗАПУСКАЕТ ИГРУ (вызывается из меню)
+    public static void startGame() {
+        SwingUtilities.invokeLater(() -> {
+            CurrencyManager.getInstance();
+
             Engine engine = Engine.getInstance();
 
-            // координаты башни
             int towerX = engine.getScreenWidth() / 2 + 200;
             int towerY = engine.getScreenHeight() - 180;
 
