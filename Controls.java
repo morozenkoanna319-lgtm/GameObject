@@ -11,13 +11,14 @@ public class Controls extends JPanel {
         setLayout(new FlowLayout());
 
         // Кнопка BaseUnit - 3 у.к.
-        add(new Button("Spawn Base", new GameObject() /* under construction */, () -> {
-            if (currency.spend(3)) {
-                System.out.println("spawn Base");
-                // under construction
-            } else {
-                System.out.println(" Не хватает валюты! Нужно 3 у.к.");
-            }
+        add(new Button("Spawn BaseUnit", new BaseUnit(), () -> {
+            BaseUnit baseUnit = new BaseUnit();
+            baseUnit.setFraction(0);
+            baseUnit.setX(100);
+            baseUnit.setY(game.getScreenHeight() - 150);
+            baseUnit.setSize(90);
+            baseUnit.setEngine(game);
+            game.spawnObject(baseUnit);
         }));
 
         // Кнопка Archer - 5 у.к.
