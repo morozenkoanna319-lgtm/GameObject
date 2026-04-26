@@ -1,118 +1,124 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class Background {
-    private List<Tree> trees;
-    private Random rand;
 
-    public Background() {
-        trees = new ArrayList<>();
-        rand = new Random();
-        generateTrees();
-    }
-
-    private void generateTrees() {
-        // Создаем 5 деревьев с разными позициями
-        trees.add(new Tree(1, 100, 450, false));   // лиственное слева
-        trees.add(new Tree(2, 300, 420, true));    // ель слева-центр
-        trees.add(new Tree(3, 500, 460, false));   // лиственное центр
-        trees.add(new Tree(4, 700, 430, true));    // ель справа-центр
-        trees.add(new Tree(5, 900, 440, false));   // лиственное справа
-    }
-
-    public void draw(Graphics g, int panelWidth, int panelHeight) {
+    public void draw(Graphics g, int width, int height) {
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Stroke originalStroke = g2d.getStroke();
-        Color originalColor = g2d.getColor();
-
-        drawSky(g2d, panelWidth, panelHeight);
-        drawClouds(g2d, panelWidth, panelHeight);
-        drawGround(g2d, panelWidth, panelHeight);
-        drawTrees(g2d, panelHeight);
-
-        g2d.setStroke(originalStroke);
-        g2d.setColor(originalColor);
-    }
-
-    private void drawSky(Graphics2D g2d, int width, int height) {
-        GradientPaint skyGradient = new GradientPaint(
+        // 1. Небо
+        GradientPaint sky = new GradientPaint(
                 0, 0, new Color(135, 206, 235),
-                0, height, new Color(70, 130, 180)
+                0, 500, new Color(176, 224, 230)
         );
-        g2d.setPaint(skyGradient);
+        g2d.setPaint(sky);
         g2d.fillRect(0, 0, width, height);
+
+        // 2. Облака
+        drawCloud(g2d, 120, 80, 70);
+        drawCloud(g2d, 400, 140, 50);
+        drawCloud(g2d, 650, 90, 60);
+        drawCloud(g2d, 280, 220, 45);
+
+        // 3. ВЕРХНЯЯ ТРАВА - без деревьев, только кусты
+        drawBush(g2d, 100, 415);
+        drawBush(g2d, 250, 420);
+        drawBush(g2d, 450, 410);
+        drawBush(g2d, 600, 425);
+        drawBush(g2d, 750, 415);
+
+        // 4. НИЖНЯЯ ТРАВА - деревья вразброс (начало Y=570)
+        // Разные позиции X и Y для естественности
+        drawTree(g2d, 60, 580, false, 1.1f);   // Лиственное слева
+        drawTree(g2d, 150, 570, true, 1.3f);   // Крупная сосна
+        drawTree(g2d, 230, 590, false, 0.9f);  // Маленькое лиственное
+        drawBush(g2d, 200, 595);
+
+        drawTree(g2d, 320, 575, true, 1.0f);   // Сосна
+        drawTree(g2d, 420, 585, false, 1.2f);  // Лиственное в центре
+        drawBush(g2d, 380, 590);
+
+        drawTree(g2d, 520, 570, true, 1.1f);   // Сосна
+        drawBush(g2d, 500, 585);
+
+        drawTree(g2d, 620, 595, false, 1.0f);  // Лиственное
+        drawTree(g2d, 700, 575, true, 1.2f);   // Крупная сосна справа
+        drawBush(g2d, 680, 590);
+
+        drawTree(g2d, 770, 585, false, 1.1f);  // Лиственное край справа
+        drawBush(g2d, 750, 595);
+
+        // Дополнительные кусты
+        drawBush(g2d, 100, 600);
+        drawBush(g2d, 300, 585);
+        drawBush(g2d, 560, 600);
     }
 
-    private void drawClouds(Graphics2D g2d, int width, int height) {
-        g2d.setColor(new Color(255, 255, 255, 200));
-        drawCloud(g2d, width * 1/5, height * 1/6, 40);
-        drawCloud(g2d, width * 4/5, height * 1/4, 50);
-        drawCloud(g2d, width * 1/2, height * 1/8, 35);
-        g2d.setColor(new Color(255, 255, 255, 150));
-        drawCloud(g2d, width * 3/4, height * 1/10, 25);
+    private void drawCloud(Graphics2D g, int x, int y, int size) {
+        g.setColor(new Color(255, 255, 255, 200));
+        g.fillOval(x, y, size, size * 2/3);
+        g.fillOval(x + size/3, y - size/4, size * 2/3, size * 2/3);
+        g.fillOval(x + size * 2/3, y, size * 3/4, size * 2/3);
     }
 
-    private void drawCloud(Graphics2D g2d, int centerX, int centerY, int radius) {
-        g2d.fillOval(centerX - radius, centerY - radius/2, radius * 2, radius);
-        g2d.fillOval(centerX - radius - radius/2, centerY - radius/4, radius, radius * 3/4);
-        g2d.fillOval(centerX + radius/2, centerY - radius/3, radius, radius * 3/4);
-        g2d.fillOval(centerX - radius/3, centerY - radius, radius * 4/3, radius * 2/3);
-    }
+    private void drawTree(Graphics2D g, int x, int y, boolean isPine, float size) {
+        // Тень (масштабируется)
+        g.setColor(new Color(0, 0, 0, 50));
+        g.fillOval(Math.round(x - 5 * size), Math.round(y + 40 * size),
+                Math.round(40 * size), Math.round(8 * size));
 
-    private void drawGround(Graphics2D g2d, int width, int height) {
-        int groundHeight = 50;
-        g2d.setColor(new Color(34, 139, 34)); // ForestGreen
-        g2d.fillRect(0, height - groundHeight, width, groundHeight);
-        drawRocks(g2d, width, height - groundHeight);
-        g2d.setColor(new Color(20, 80, 20));
-        g2d.setStroke(new BasicStroke(2));
-        g2d.drawLine(0, height - groundHeight, width, height - groundHeight);
-    }
+        if (isPine) {
+            // Сосна — ствол
+            g.setColor(new Color(139, 90, 43));
+            g.fillRect(Math.round(x + 15 * size), Math.round(y + 25 * size),
+                    Math.round(10 * size), Math.round(20 * size));
 
-    private void drawRocks(Graphics2D g2d, int width, int groundY) {
-        g2d.setColor(new Color(105, 105, 105)); // DarkGray для камней
-        g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        drawRock(g2d, width * 1/8, groundY, 30, 20);
-        drawRock(g2d, width * 7/8, groundY, 40, 25);
-        g2d.setColor(new Color(128, 128, 128));
-        drawRock(g2d, width * 1/3, groundY, 20, 15);
-        drawRock(g2d, width * 2/3, groundY, 35, 22);
-    }
+            // Крона (3 уровня)
+            g.setColor(new Color(34, 120, 34));
+            int[] x1 = {Math.round(x), Math.round(x + 20 * size), Math.round(x + 10 * size)};
+            int[] y1 = {Math.round(y + 30 * size), Math.round(y + 30 * size), Math.round(y)};
+            g.fillPolygon(x1, y1, 3);
 
-    private void drawRock(Graphics2D g2d, int x, int groundY, int width, int height) {
-        int[] xPoints = {
-                x,
-                x + width/4,
-                x + width/2,
-                x + width * 3/4,
-                x + width,
-                x + width * 3/4,
-                x + width/2,
-                x + width/4
-        };
-        int[] yPoints = {
-                groundY,
-                groundY - height/2,
-                groundY - height,
-                groundY - height * 3/4,
-                groundY - height/3,
-                groundY - height/4,
-                groundY - height/2,
-                groundY - height/3
-        };
+            g.setColor(new Color(50, 150, 50));
+            int[] x2 = {Math.round(x + 2 * size), Math.round(x + 18 * size), Math.round(x + 10 * size)};
+            int[] y2 = {Math.round(y + 20 * size), Math.round(y + 20 * size), Math.round(y - 10 * size)};
+            g.fillPolygon(x2, y2, 3);
 
-        g2d.fillPolygon(xPoints, yPoints, 8);
-        g2d.setColor(Color.BLACK);
-        g2d.drawPolygon(xPoints, yPoints, 8);
-        g2d.setColor(new Color(105, 105, 105));
-    }
+            g.setColor(new Color(80, 180, 80));
+            int[] x3 = {Math.round(x + 4 * size), Math.round(x + 16 * size), Math.round(x + 10 * size)};
+            int[] y3 = {Math.round(y + 10 * size), Math.round(y + 10 * size), Math.round(y - 20 * size)};
+            g.fillPolygon(x3, y3, 3);
+        } else {
+            // Лиственное дерево — ствол
+            g.setColor(new Color(139, 90, 43));
+            g.fillRect(Math.round(x + 15 * size), Math.round(y + 30 * size),
+                    Math.round(10 * size), Math.round(15 * size));
 
-    private void drawTrees(Graphics2D g2d, int panelHeight) {
-        for (Tree tree : trees) {
-            tree.draw(g2d);
+            // Крона
+            g.setColor(new Color(34, 120, 34));
+            g.fillOval(Math.round(x), Math.round(y),
+                    Math.round(40 * size), Math.round(35 * size));
+
+            g.setColor(new Color(50, 150, 50));
+            g.fillOval(Math.round(x + 5 * size), Math.round(y - 8 * size),
+                    Math.round(30 * size), Math.round(28 * size));
+
+            g.setColor(new Color(80, 180, 80));
+            g.fillOval(Math.round(x + 10 * size), Math.round(y - 15 * size),
+                    Math.round(20 * size), Math.round(20 * size));
         }
+    }
+
+    private void drawTree(Graphics2D g, int x, int y, boolean isPine) {
+        drawTree(g, x, y, isPine, 1.0f);
+    }
+
+    private void drawBush(Graphics2D g, int x, int y) {
+        g.setColor(new Color(0, 0, 0, 40));
+        g.fillOval(x - 5, y + 18, 25, 6);
+        g.setColor(new Color(40, 130, 40));
+        g.fillOval(x, y, 22, 18);
+        g.setColor(new Color(60, 160, 60));
+        g.fillOval(x + 4, y - 4, 16, 14);
     }
 }

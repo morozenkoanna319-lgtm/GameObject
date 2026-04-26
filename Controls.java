@@ -12,13 +12,18 @@ public class Controls extends JPanel {
 
         // Кнопка BaseUnit - 3 у.к.
         add(new Button("Spawn BaseUnit", new BaseUnit(), () -> {
-            BaseUnit baseUnit = new BaseUnit();
-            baseUnit.setFraction(0);
-            baseUnit.setX(100);
-            baseUnit.setY(game.getScreenHeight() - 150);
-            baseUnit.setSize(90);
-            baseUnit.setEngine(game);
-            game.spawnObject(baseUnit);
+            // ПРОВЕРКА ВАЛЮТЫ (добавлено!)
+            if (currency.spend(3)) {
+                BaseUnit baseUnit = new BaseUnit();
+                baseUnit.setFraction(0);
+                baseUnit.setX(100);
+                baseUnit.setY(game.getScreenHeight() - 150);
+                baseUnit.setSize(90);
+                baseUnit.setEngine(game);
+                game.spawnObject(baseUnit);
+            } else {
+                System.out.println("Не хватает валюты для BaseUnit! Нужно 3 у.к.");
+            }
         }));
 
         // Кнопка Archer - 5 у.к.
@@ -34,7 +39,7 @@ public class Controls extends JPanel {
                 unitArcher.setDirection(1);
                 game.spawnObject(unitArcher);
             } else {
-                System.out.println(" Не хватает валюты! Нужно 5 у.к.");
+                System.out.println("Не хватает валюты! Нужно 5 у.к.");
             }
         }));
 
@@ -44,13 +49,13 @@ public class Controls extends JPanel {
                 UnitDinoRider unitDinoRider = new UnitDinoRider();
                 unitDinoRider.setFraction(0);
                 unitDinoRider.setX(0);
-                unitDinoRider.setY(game.getScreenHeight() - 250);
+                unitDinoRider.setY(470); // ✅ ИСПРАВЛЕНО: было game.getScreenHeight() - 250
                 unitDinoRider.setSize(100);
                 unitDinoRider.setSpeed(1);
                 unitDinoRider.setDirection(1);
                 game.spawnObject(unitDinoRider);
             } else {
-                System.out.println(" Не хватает валюты! Нужно 7 у.к.");
+                System.out.println("Не хватает валюты! Нужно 7 у.к.");
             }
         }));
     }

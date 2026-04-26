@@ -50,19 +50,11 @@ public class Engine {
     }
 
     public void spawnObject() {
-        // Случайные координаты
         float x = random.nextInt(screenWidth);
         float y = random.nextInt(screenHeight);
-
-        // Случайный цвет
         Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-
-        // Создаём объект с заданными параметрами
-        GameObject newObject = new GameObject(
-                -1, x, y, 30, 100, color
-        );
-
-        spawnObject(newObject); // добавляем в список
+        GameObject newObject = new GameObject(-1, x, y, 30, 100, color);
+        spawnObject(newObject);
     }
 
     public void spawnObject(GameObject gameObject) {
@@ -75,60 +67,39 @@ public class Engine {
 
     public boolean collisionAABB(GameObject a, GameObject b) {
         if (a == null || b == null) return false;
-
         float halfA = a.getSize() / 2f;
         float halfB = b.getSize() / 2f;
-
         float leftA = a.getX() - halfA;
         float rightA = a.getX() + halfA;
         float topA = a.getY() - halfA;
         float bottomA = a.getY() + halfA;
-
         float leftB = b.getX() - halfB;
         float rightB = b.getX() + halfB;
         float topB = b.getY() - halfB;
         float bottomB = b.getY() + halfB;
-
         return rightA > leftB && leftA < rightB && bottomA > topB && topA < bottomB;
     }
 
     public boolean collisionCircle(GameObject a, GameObject b) {
         if (a == null || b == null) return false;
-
         float radiusA = a.getSize() / 2f;
         float radiusB = b.getSize() / 2f;
-
         float deltax = a.getX() - b.getX();
         float deltay = a.getY() - b.getY();
         float distance = (float) Math.sqrt(deltax * deltax + deltay * deltay);
-
         return distance < radiusA + radiusB;
     }
 
     public void spawnObjectPattern(List<GameObject> pattern, long delay) {
-        // создаёт новый поток
         Thread spawnThread = new Thread(() -> {
             for (int i = 0; i < pattern.size(); i++) {
                 GameObject elem = pattern.get(i);
-
-                // копия объекта создаётся
-                GameObject newObject = new GameObject(
-                        -1,
-                        elem.getX(),
-                        elem.getY(),
-                        100,
-                        elem.getSpeed(),
-                        elem.getColor()
-                );
+                GameObject newObject = new GameObject(-1, elem.getX(), elem.getY(), 100, elem.getSpeed(), elem.getColor());
                 newObject.setFraction(elem.getFraction());
-
-                // она добавляется в список
                 synchronized (objects) {
                     objects.add(newObject);
                     System.out.println("Объект " + newObject.getId() + " заспавнен");
                 }
-
-                // задержка (очередь)
                 if (i < pattern.size() - 1) {
                     try {
                         Thread.sleep(delay);
@@ -140,24 +111,19 @@ public class Engine {
             }
             System.out.println("Общий спавн завершен");
         });
-
-        spawnThread.start(); // запуск потока
+        spawnThread.start();
     }
 
-    // supplier of Pythagoras - движение к цели
     public void moveTowards(GameObject attacker, GameObject target) {
         if (attacker == null || target == null) return;
         if (!attacker.isAlive() || !target.isAlive()) return;
-
         float dx = target.getX() - attacker.getX();
         float dy = target.getY() - attacker.getY();
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
         if (distance > 0.01f) {
             float speed = attacker.getSpeed();
             float moveX = (dx / distance) * speed * deltaTime;
             float moveY = (dy / distance) * speed * deltaTime;
-
             attacker.setX(attacker.getX() + moveX);
             attacker.setY(attacker.getY() + moveY);
         }
@@ -177,11 +143,9 @@ public class Engine {
 
     public GameObject findNearestEnemy(GameObject self, float range) {
         if (self == null) return null;
-
         GameObject nearest = null;
         float rangeSq = range * range;
         float minDistanceSq = rangeSq;
-
         synchronized (objects) {
             for (GameObject obj : objects) {
                 if (obj != self && obj.isAlive() && obj.getFraction() != self.getFraction()) {
@@ -224,13 +188,20 @@ public class Engine {
         this.screenWidth = screenWidth;
     }
 
-
-    public float getGameTime() { return gameTime; }
+    public float getGameTime() {
+        return gameTime;
+    }
 
     private void spawnEnemyMob() {
-        GameObject enemy = new GameObject(-1, 1600,800, 50, -120f);
-        enemy.setFraction(1);
-        spawnObject(enemy);
+        // ✅ Опустили врага на дорогу (Y=530)
+        GameObject enemy = new GameObject(-1, 780, 530, 50, -120f);
 
+        enemy.setFraction(1);
+        enemy.setHealth(100);
+        enemy.setAttackDamage(25);
+        enemy.setAttackRange(100);
+        enemy.setAttackCooldown(1f);
+        spawnObject(enemy);
+        System.out.println("👾 Враг заспавнен на Y=530 (дорога)");
     }
 }
