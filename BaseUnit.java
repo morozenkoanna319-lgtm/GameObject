@@ -30,38 +30,27 @@ public class BaseUnit extends GameObject {
 
     @Override
     public void update(float deltaTime) {
+        super.update(deltaTime);
         if (!isAlive) return;
 
-        // ДВИГАЕМСЯ К БАШНЕ
-        float dx = TOWER_X - x;
-        float dy = TOWER_Y - y;
-        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        Engine engine = Engine.getInstance();
+        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
 
-        if (dist > 10) {
-            // Движение
-            float angle = (float) Math.atan2(dy, dx);
-            x += Math.cos(angle) * BASE_SPEED * deltaTime;
-            y += Math.sin(angle) * BASE_SPEED * deltaTime;
-        } else {
-            // БЬЕМ БАШНЮ КАЖДУЮ СЕКУНДУ
-            if (engine != null) {
-                float currentTime = engine.getGameTime();
-                if (currentTime - lastAttackTime >= attackCooldown) {
-                    // ИЩЕМ БАШНЮ ВО ВСЕХ ОБЪЕКТАХ
-                    List<GameObject> objects = engine.getObjects();
-                    if (objects != null) {
-                        for (GameObject obj : objects) {
-                            if (obj == null) continue;
-                            String className = obj.getClass().getSimpleName();
-                            if (className.contains("Tower") && obj.isAlive()) {
-                                // НАШЛИ БАШНЮ - БЬЕМ!
-                                obj.takeDamage(attackDamage);
-                                System.out.println("⚾⚾⚾ BASE UNIT HITS " + className + " FOR " + attackDamage + " DAMAGE! ⚾⚾⚾");
-                                lastAttackTime = currentTime;
-                                break;
-                            }
-                        }
-                    }
+        System.out.println(currentTarget);
+        if (currentTarget != null) {
+            float dist = distanceTo(currentTarget);
+
+            if (dist > attackRange) {
+                // движение к башне
+                moveTowards(currentTarget, deltaTime);
+            } else {
+                // атака в радиусе поражения
+                if (canAttack(engine.getGameTime())) {
+                    attack(currentTarget, engine.getGameTime());
+                    stop();
+                    lastAttackTime = engine.getGameTime();
+                } else {
+                    start();
                 }
             }
         }

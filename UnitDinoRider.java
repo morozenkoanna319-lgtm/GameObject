@@ -35,13 +35,12 @@ public class UnitDinoRider extends GameObject {
 
     @Override
     public void update(float deltaTime) {
+        super.update(deltaTime);
         if (!isAlive) return;
 
-        // выбор цели, если её нет или она мертва
-        if (currentTarget == null || !currentTarget.isAlive()) {
-            currentTarget = findTower();
-        }
-
+        Engine engine = Engine.getInstance();
+        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
+        System.out.println(currentTarget);
         if (currentTarget != null) {
             float dist = distanceTo(currentTarget);
 
@@ -51,29 +50,14 @@ public class UnitDinoRider extends GameObject {
             } else {
                 // атака в радиусе поражения
                 if (canAttack(engine.getGameTime())) {
-                    throwSpearAt(currentTarget);
+                    attack(currentTarget, engine.getGameTime());
+                    stop();
                     lastAttackTime = engine.getGameTime();
+                } else {
+                    start();
                 }
             }
         }
-    }
-
-    /**
-     * Поиск башни на карте.
-     */
-    private GameObject findTower() {
-        List<GameObject> objects = engine.getObjects();
-        for (GameObject obj : objects) {
-            if (obj == null || !obj.isAlive()) continue;
-            if (obj.getFraction() == fraction) continue;
-
-            // проверка по имени класса (Tower, Tower67 и т.д.)
-            String className = obj.getClass().getSimpleName();
-            if (className.contains("Tower")) {
-                return obj;
-            }
-        }
-        return null;
     }
 
     /**

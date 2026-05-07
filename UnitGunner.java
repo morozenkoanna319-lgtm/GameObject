@@ -11,7 +11,6 @@ public class UnitGunner extends GameObject {
     private static final int MAX_HEALTH = 50;
 
     private GameObject target;
-    private long lastAttackTime;
     private transient Engine engine;
     private int currentHealth;
 
@@ -47,82 +46,29 @@ public class UnitGunner extends GameObject {
     }
 
     @Override
-    protected void update(float dt) {
+    protected void update(float deltaTime) {
+        super.update(deltaTime);
         if (!isAlive) return;
 
-        if (engine == null) {
-            engine = Engine.getInstance();
-            if (engine == null) return;
-        }
+        Engine engine = Engine.getInstance();
+        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
+        System.out.println(currentTarget);
+        if (currentTarget != null) {
+            float dist = distanceTo(currentTarget);
 
-        findTarget();
-
-        if (target != null && target.isAlive()) {
-            float distanceToTarget = Math.abs(this.x - target.getX());
-            float yDifference = Math.abs(this.y - target.getY());
-
-            if (distanceToTarget <= ATTACK_RANGE && yDifference <= 50) {
-                attack();
+            if (dist > attackRange) {
+                // движение к башне
+                moveTowards(currentTarget, deltaTime);
             } else {
-                // Движение к цели
-                if (target.getX() > this.x) {
-                    this.x += MOVE_SPEED * dt;
+                // атака в радиусе поражения
+                if (canAttack(engine.getGameTime())) {
+                    attack(currentTarget, engine.getGameTime());
+                    stop();
+                    lastAttackTime = engine.getGameTime();
                 } else {
-                    this.x -= MOVE_SPEED * dt;
-                }
-
-                if (target.getY() > this.y) {
-                    this.y += 50 * dt;
-                } else if (target.getY() < this.y) {
-                    this.y -= 50 * dt;
+                    start();
                 }
             }
-        } else {
-            // Если нет цели - просто идем ВЛЕВО (к правому краю экрана)
-            this.x -= MOVE_SPEED * dt;
-        }
-
-        if (currentHealth <= 0 || this.x > 850 || this.x < -100) {
-            isAlive = false;
-        }
-    }
-
-    /**
-     * Поиск цели - атакуем ВСЕХ, КРОМЕ БАШНИ И СЕБЯ
-     */
-    private void findTarget() {
-        if (engine == null) return;
-
-        List<GameObject> objects = engine.getObjects();
-        if (objects == null) return;
-
-        GameObject nearest = null;
-        float minDistance = Float.MAX_VALUE;
-
-        for (GameObject obj : objects) {
-            if (obj == null) continue;
-            if (!obj.isAlive()) continue;
-            if (obj == this) continue;  // пропускаем себя
-
-            // пропускаем башню
-            if (obj.getClass().getSimpleName().contains("Tower")) continue;
-
-            // пропускаем других ганнеров (чтобы не дрались между собой)
-            if (obj.getClass().getSimpleName().equals("UnitGunner")) continue;
-
-            // Атакуем всё остальное (лучников, всадников и т.д.)
-            float distance = Math.abs(obj.getX() - this.x);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearest = obj;
-            }
-        }
-
-        if (nearest != null) {
-            target = nearest;
-            System.out.println("Ганнер нашёл цель: " + target.getClass().getSimpleName());
-        } else {
-            target = null;
         }
     }
 

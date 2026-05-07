@@ -179,8 +179,7 @@ public class Engine {
         if (self == null) return null;
 
         GameObject nearest = null;
-        float rangeSq = range * range;
-        float minDistanceSq = rangeSq;
+        float minDistanceSq = range * range;
 
         synchronized (objects) {
             for (GameObject obj : objects) {
