@@ -120,7 +120,7 @@ public class UnitGunner extends GameObject {
 
         if (nearest != null) {
             target = nearest;
-            System.out.println("🎯 Ганнер нашёл цель: " + target.getClass().getSimpleName());
+            System.out.println("Ганнер нашёл цель: " + target.getClass().getSimpleName());
         } else {
             target = null;
         }
@@ -133,7 +133,7 @@ public class UnitGunner extends GameObject {
         if (currentTime - lastAttackTime >= ATTACK_COOLDOWN_MS) {
             target.takeDamage(DAMAGE);
             lastAttackTime = currentTime;
-            System.out.println("💥 Ганнер АТАКУЕТ " + target.getClass().getSimpleName() +
+            System.out.println("Ганнер АТАКУЕТ " + target.getClass().getSimpleName() +
                     "! Урон: " + DAMAGE);
 
             if (!target.isAlive()) {
@@ -147,11 +147,11 @@ public class UnitGunner extends GameObject {
     public void takeDamage(int damage) {
         this.currentHealth -= damage;
         this.health = this.currentHealth;
-        System.out.println("💔 Ганнер получил урон: " + damage + ", HP: " + currentHealth);
+        System.out.println("Ганнер получил урон: " + damage + ", HP: " + currentHealth);
 
         if (this.currentHealth <= 0) {
             this.isAlive = false;
-            System.out.println("☠️ Ганнер уничтожен!");
+            System.out.println("Ганнер уничтожен!");
         }
     }
 

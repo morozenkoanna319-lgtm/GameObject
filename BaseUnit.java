@@ -8,7 +8,7 @@ public class BaseUnit extends GameObject {
     private static final float BASE_ATTACK_COOLDOWN = 1f;
     private float lastAttackTime = -5f;
 
-    // КООРДИНАТЫ БАШНИ (ПОМЕНЯЙ НА СВОИ)
+
     private static final float TOWER_X = 500;
     private static final float TOWER_Y = 300;
 

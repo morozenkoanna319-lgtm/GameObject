@@ -5,7 +5,6 @@ public class Button extends JButton {
     // Константы
     private static final int TIMER_DELAY_MS = 16;   // ~60 FPS
     private static final int SHADOW_ALPHA = 100;
-    private static final int OVERLAY_ALPHA = 139;
 
     private boolean isOnCooldown = false;
     private Timer cooldownTimer;

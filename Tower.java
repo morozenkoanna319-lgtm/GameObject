@@ -46,12 +46,13 @@ public class Tower extends GameObject {
     // Параметры башни
     private TowerType towerType;
     private int maxHealth;
-    private int currentHealth;
     private float xOffset;
+    private float degradeThresholdStoneToWooden;
+    private float degradeThresholdWoodenToRuined;
 
     // Пороги деградации (в процентах от максимального здоровья)
-    private static final float DEGRADE_THRESHOLD_1 = 0.5f;  // При 50% HP: STONE → WOODEN
-    private static final float DEGRADE_THRESHOLD_2 = 0.2f;  // При 20% HP: WOODEN → RUINED
+    private static final float DEFAULT_DEGRADE_THRESHOLD_1 = 0.5f;  // При 50% HP: STONE → WOODEN
+    private static final float DEFAULT_DEGRADE_THRESHOLD_2 = 0.2f;  // При 20% HP: WOODEN → RUINED
 
     // Константы для отрисовки
     private static final int TOWER_HEIGHT = 300;
@@ -64,19 +65,39 @@ public class Tower extends GameObject {
 
     // Конструктор с типом башни
     public Tower(int id, float x, float y, int size, float heal, TowerType type, float xOffset) {
-        super(id, x, y, size, heal);
+        this(id, x, y, size, heal, type, xOffset,
+                DEFAULT_DEGRADE_THRESHOLD_1, DEFAULT_DEGRADE_THRESHOLD_2);
+    }
+
+    public Tower(int id, float x, float y, int size, float heal, TowerType type, float xOffset,
+                 float degradeThresholdStoneToWooden, float degradeThresholdWoodenToRuined) {
+        super(id, x, y, size, 0f);
         this.towerType = type;
         this.xOffset = xOffset;
+        validateThresholds(degradeThresholdStoneToWooden, degradeThresholdWoodenToRuined);
+        this.degradeThresholdStoneToWooden = degradeThresholdStoneToWooden;
+        this.degradeThresholdWoodenToRuined = degradeThresholdWoodenToRuined;
         this.maxHealth = type.getMaxHealth();
-        this.currentHealth = maxHealth;
         this.health = maxHealth;
 
-        System.out.println("Создана " + type.getName() + " башня (Уровень " + type.getLevel() + ") с HP: " + maxHealth);
+        System.out.println("Tower created: " + type.getName() + " (level " + type.getLevel() + ") with HP: " + maxHealth);
     }
 
     // Конструктор для обратной совместимости
     public Tower(int id, float x, float y, int size, float heal) {
         this(id, x, y, size, heal, TowerType.STONE, 0);
+    }
+
+    private void validateThresholds(float degradeThresholdStoneToWooden, float degradeThresholdWoodenToRuined) {
+        if (degradeThresholdStoneToWooden < 0f || degradeThresholdStoneToWooden > 1f) {
+            throw new IllegalArgumentException("degradeThresholdStoneToWooden must be between 0 and 1");
+        }
+        if (degradeThresholdWoodenToRuined < 0f || degradeThresholdWoodenToRuined > 1f) {
+            throw new IllegalArgumentException("degradeThresholdWoodenToRuined must be between 0 and 1");
+        }
+        if (degradeThresholdWoodenToRuined > degradeThresholdStoneToWooden) {
+            throw new IllegalArgumentException("wooden-to-ruined threshold cannot exceed stone-to-wooden threshold");
+        }
     }
 
     // Получение урона с деградацией
@@ -85,52 +106,55 @@ public class Tower extends GameObject {
         if (!isAlive) return;
 
         int originalDamage = damage;
+        int finalDamage = damage;
 
         // Критический урон для деревянных башен
         if (towerType == TowerType.WOODEN && damage > 30) {
-            damage = (int)(damage * 1.3);
+            finalDamage = (int)(finalDamage * 1.3);
             System.out.println("🔥 Критический урон по деревянной башне!");
         }
 
         // Сниженный урон для каменных башен
         if (towerType == TowerType.STONE && damage < 20) {
-            damage = (int)(damage * 0.7);
+            finalDamage = (int)(finalDamage * 0.7);
             System.out.println("🛡️ Каменная башня снизила урон");
         }
 
         // Разрушенная башня получает дополнительный урон
         if (towerType == TowerType.RUINED) {
-            damage = (int)(damage * 1.2);
+            finalDamage = (int)(finalDamage * 1.2);
             System.out.println("💔 Разрушенная башня получила критический урон!");
         }
 
-        currentHealth = Math.max(0, currentHealth - damage);
-        health = currentHealth;
+        health = Math.max(0, health - finalDamage);
 
         System.out.printf("%s башня получила %d урона (%d → %d). Осталось HP: %d/%d (%.0f%%)%n",
-                towerType.getName(), originalDamage, damage, currentHealth,
-                currentHealth, maxHealth, (float)currentHealth / maxHealth * 100);
+                towerType.getName(), originalDamage, finalDamage, health,
+                health, maxHealth, (float) health / maxHealth * 100);
 
         // ПРОВЕРКА ДЕГРАДАЦИИ ПОСЛЕ ПОЛУЧЕНИЯ УРОНА
         checkAndDegrade();
 
-        if (currentHealth <= 0) {
+        if (health <= 0) {
             destroy();
         }
     }
 
     // Проверка и выполнение деградации на основе текущего здоровья
     private void checkAndDegrade() {
-        float healthPercent = (float) currentHealth / maxHealth;
+        boolean degraded;
+        do {
+            degraded = false;
+            float healthPercent = getCurrentHealthPercent();
 
-        // Деградация с камня на дерево
-        if (towerType == TowerType.STONE && healthPercent <= DEGRADE_THRESHOLD_1) {
-            degradeTo(TowerType.WOODEN);
-        }
-        // Деградация с дерева на руины
-        else if (towerType == TowerType.WOODEN && healthPercent <= DEGRADE_THRESHOLD_2) {
-            degradeTo(TowerType.RUINED);
-        }
+            if (towerType == TowerType.STONE && healthPercent <= degradeThresholdStoneToWooden) {
+                degradeTo(TowerType.WOODEN);
+                degraded = true;
+            } else if (towerType == TowerType.WOODEN && healthPercent <= degradeThresholdWoodenToRuined) {
+                degradeTo(TowerType.RUINED);
+                degraded = true;
+            }
+        } while (degraded && isAlive);
     }
 
     // Метод деградации башни до указанного типа
@@ -141,22 +165,21 @@ public class Tower extends GameObject {
         TowerType oldType = towerType;
 
         // Сохраняем процент здоровья перед деградацией
-        float healthPercent = (float) currentHealth / maxHealth;
+        float healthPercent = getCurrentHealthPercent();
 
         // Меняем тип башни
         towerType = newType;
         maxHealth = towerType.getMaxHealth();
 
         // Новое здоровье пропорционально проценту от нового макс. здоровья
-        currentHealth = Math.max(1, (int)(maxHealth * healthPercent));
-        health = currentHealth;
+        health = Math.max(1, (int)(maxHealth * healthPercent));
 
         System.out.println("⚠️ БАШНЯ ДЕГРАДИРОВАЛА: " + oldType.getName() + " → " + towerType.getName());
-        System.out.println("   HP изменилось: " + currentHealth + "/" + maxHealth + " (было " +
+        System.out.println("   HP изменилось: " + health + "/" + maxHealth + " (было " +
                 (int)(healthPercent * 100) + "% от старого)");
 
         // Если после деградации здоровье упало до 0, башня разрушается
-        if (currentHealth <= 0) {
+        if (health <= 0) {
             destroy();
         }
     }
@@ -180,40 +203,38 @@ public class Tower extends GameObject {
     public void heal(int amount) {
         if (!isAlive) return;
 
-        currentHealth = Math.min(maxHealth, currentHealth + amount);
-        health = currentHealth;
+        health = Math.min(maxHealth, health + amount);
         System.out.printf("%s башня восстановила %d HP. Текущее HP: %d/%d (%.0f%%)%n",
-                towerType.getName(), amount, currentHealth, maxHealth,
-                (float)currentHealth / maxHealth * 100);
+                towerType.getName(), amount, health, maxHealth,
+                (float) health / maxHealth * 100);
 
-        // Опционально: можно добавить восстановление типа башни при полном излечении
-        // checkAndUpgradeFromHeal();
+        checkAndUpgradeFromHeal();
     }
 
     // Опционально: восстановление типа башни при излечении
     private void checkAndUpgradeFromHeal() {
-        float healthPercent = (float) currentHealth / maxHealth;
+        float healthPercent = getCurrentHealthPercent();
 
-        if (towerType == TowerType.RUINED && healthPercent > DEGRADE_THRESHOLD_2) {
+        if (towerType == TowerType.RUINED && healthPercent > degradeThresholdWoodenToRuined) {
             upgradeTo(TowerType.WOODEN);
-        } else if (towerType == TowerType.WOODEN && healthPercent > DEGRADE_THRESHOLD_1) {
+        } else if (towerType == TowerType.WOODEN && healthPercent > degradeThresholdStoneToWooden) {
             upgradeTo(TowerType.STONE);
         }
     }
 
     // Улучшение башни (обратный процесс деградации)
     public boolean upgradeTo(TowerType newType) {
+        if (!isAlive) return false;
         if (towerType.getLevel() >= newType.getLevel()) {
             System.out.println("Нельзя улучшить до равного или более низкого уровня!");
             return false;
         }
 
-        float healthPercent = (float) currentHealth / maxHealth;
+        float healthPercent = getCurrentHealthPercent();
         TowerType oldType = towerType;
         towerType = newType;
         maxHealth = towerType.getMaxHealth();
-        currentHealth = Math.min(maxHealth, (int)(maxHealth * healthPercent));
-        health = currentHealth;
+        health = Math.min(maxHealth, (int)(maxHealth * healthPercent));
 
         System.out.println("✨ БАШНЯ УЛУЧШЕНА: " + oldType.getName() + " → " + towerType.getName());
         return true;
@@ -225,20 +246,20 @@ public class Tower extends GameObject {
     }
 
     // Геттеры
-    public int getCurrentHealth() { return currentHealth; }
+    public int getCurrentHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
     public TowerType getTowerType() { return towerType; }
     public float getXOffset() { return xOffset; }
     public void setXOffset(float xOffset) { this.xOffset = xOffset; }
 
     // Получение порогов деградации
-    public float getDegradeThreshold1() { return DEGRADE_THRESHOLD_1; }
-    public float getDegradeThreshold2() { return DEGRADE_THRESHOLD_2; }
-    public float getCurrentHealthPercent() { return (float) currentHealth / maxHealth; }
+    public float getDegradeThreshold1() { return degradeThresholdStoneToWooden; }
+    public float getDegradeThreshold2() { return degradeThresholdWoodenToRuined; }
+    public float getCurrentHealthPercent() { return (float) health / maxHealth; }
 
     // Получение цвета здоровья для отображения
     public Color getHealthColor() {
-        float percent = (float) currentHealth / maxHealth;
+        float percent = getCurrentHealthPercent();
         if (percent >= 0.75f) return Color.GREEN;
         if (percent >= 0.5f) return Color.YELLOW;
         if (percent >= 0.25f) return Color.ORANGE;
@@ -412,9 +433,9 @@ public class Tower extends GameObject {
         Color flagColor;
         if (!isAlive) {
             flagColor = Color.GRAY;
-        } else if (currentHealth <= maxHealth * 0.25f) {
+        } else if (health <= maxHealth * 0.25f) {
             flagColor = Color.RED; // Красный флаг при критическом здоровье
-        } else if (currentHealth <= maxHealth * 0.5f) {
+        } else if (health <= maxHealth * 0.5f) {
             flagColor = Color.ORANGE; // Оранжевый при плохом здоровье
         } else {
             flagColor = towerType == TowerType.STONE ? Color.BLUE :
@@ -444,7 +465,7 @@ public class Tower extends GameObject {
         g2d.fillRect(barX, barY, barWidth, barHeight);
 
         // Заполнение
-        int healthWidth = (int)((currentHealth / (float)maxHealth) * barWidth);
+        int healthWidth = (int)((health / (float)maxHealth) * barWidth);
         g2d.setColor(getHealthColor());
         g2d.fillRect(barX, barY, healthWidth, barHeight);
 
@@ -454,7 +475,7 @@ public class Tower extends GameObject {
 
         // Текст здоровья
         g2d.setFont(new Font("Arial", Font.BOLD, 10));
-        String healthText = currentHealth + "/" + maxHealth;
+        String healthText = health + "/" + maxHealth;
         FontMetrics fm = g2d.getFontMetrics();
         int textX = centerX - fm.stringWidth(healthText)/2;
         g2d.setColor(Color.WHITE);
@@ -462,23 +483,21 @@ public class Tower extends GameObject {
     }
 
     private void drawDegradeIndicators(Graphics2D g2d, int centerX, int baseY) {
-        float healthPercent = (float) currentHealth / maxHealth;
         int indicatorY = baseY - TOWER_HEIGHT - 35;
 
-        // Отображаем пороги деградации
         if (towerType == TowerType.STONE) {
-            // Показываем, когда начнётся деградация (50%)
-            int thresholdX = centerX - 50 + (int)(DEGRADE_THRESHOLD_1 * 100);
+            int thresholdPercent = Math.round(degradeThresholdStoneToWooden * 100);
+            int thresholdX = centerX - 50 + thresholdPercent;
             g2d.setColor(new Color(255, 100, 0, 100));
-            g2d.fillRect(centerX - 50, indicatorY - 10, (int)(DEGRADE_THRESHOLD_1 * 100), 5);
+            g2d.fillRect(centerX - 50, indicatorY - 10, thresholdPercent, 5);
             g2d.setColor(Color.ORANGE);
-            g2d.drawString("↓ Деградация при 50%", thresholdX - 40, indicatorY - 5);
+            g2d.drawString("Degrade at " + thresholdPercent + "%", thresholdX - 40, indicatorY - 5);
         } else if (towerType == TowerType.WOODEN) {
-            // Показываем, когда начнётся деградация (20%)
+            int thresholdPercent = Math.round(degradeThresholdWoodenToRuined * 100);
             g2d.setColor(new Color(255, 0, 0, 100));
-            g2d.fillRect(centerX - 50, indicatorY - 10, (int)(DEGRADE_THRESHOLD_2 * 100), 5);
+            g2d.fillRect(centerX - 50, indicatorY - 10, thresholdPercent, 5);
             g2d.setColor(Color.RED);
-            g2d.drawString("↓ Деградация при 20%", centerX - 45, indicatorY - 5);
+            g2d.drawString("Degrade at " + thresholdPercent + "%", centerX - 45, indicatorY - 5);
         }
     }
 }

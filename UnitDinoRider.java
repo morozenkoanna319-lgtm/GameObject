@@ -19,7 +19,6 @@ public class UnitDinoRider extends GameObject {
     private static final int DINO_HEALTH = 200;
     private static final float SPEAR_SPEED = 600f;
 
-    // КОНСТРУКТОР БЕЗ ПАРАМЕТРОВ ДЛЯ СПАВНА ЧЕРЕЗ РЕФЛЕКСИЮ
     public UnitDinoRider() {
         this.fraction = 2;
     }
@@ -94,7 +93,7 @@ public class UnitDinoRider extends GameObject {
         if (health <= 0) {
             health = 0;
             isAlive = false;
-            System.out.println("🦖 Всадник на динозавре убит!");
+            System.out.println("Всадник на динозавре убит!");
         }
     }
 

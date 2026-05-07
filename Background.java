@@ -1,15 +1,12 @@
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Background {
     private List<Tree> trees;
-    private Random rand;
 
     public Background() {
         trees = new ArrayList<>();
-        rand = new Random();
         generateTrees();
     }
 

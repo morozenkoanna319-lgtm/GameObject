@@ -4,8 +4,9 @@ import java.util.List;
 /**
  * Стрела с баллистикой и коллизией.
  * Оптимизирован: убраны лишние операции, добавлены проверки.
- *
- * By AmericanCoolBoyUSA777
+ * By vadhub
+ * edit by DeepSeek
+ * edit by AmericanCoolBoyUSA777
  */
 public class Arrow extends GameObject {
     private float vx, vy;
@@ -130,10 +131,5 @@ public class Arrow extends GameObject {
         float cosTheta = Math.signum(dx) / (float) Math.sqrt(1 + u * u);
         float sinTheta = u * cosTheta;
         return (float) Math.atan2(sinTheta, cosTheta);
-    }
-
-    @Override
-    public void takeDamage(int damage) {
-        // стрелы неуязвимы
     }
 }
