@@ -114,12 +114,12 @@ public class GameObject implements Cloneable, Icon {
         health -= damage;
         if (health <= 0) {
             health = 0;
-            isAlive = false;
+            destroy();
         }
     }
 
     public void destroy() {
-
+        isAlive = false;
     }
 
     public boolean canAttack(float currentTime) {
