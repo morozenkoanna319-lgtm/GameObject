@@ -10,24 +10,7 @@ import java.util.List;
 public class UnitArcher extends GameObject {
 
     // настройки лучника
-    private static final float ARCHER_SPEED = 5f;
-    private static final float ARCHER_ATTACK_RANGE = 300f;
-    private static final float ARCHER_ATTACK_COOLDOWN = 1.5f;
     private static final float ARROW_SPEED = 600f;
-
-    public UnitArcher() {
-        this.fraction = 2;  // <--- ДОБАВИТЬ ЭТУ СТРОЧКУ
-    }
-
-    public UnitArcher(int id, float x, float y, int size, float speed) {
-        super(id, x, y, size, ARCHER_SPEED, new Color(70, 130, 180));
-        attackRange = ARCHER_ATTACK_RANGE;
-        attackCooldown = ARCHER_ATTACK_COOLDOWN;
-        lastAttackTime = -5f;
-        attackDamage = 25;
-        health = 100;
-        fraction = 2;  // <--- ЭТА СТРОЧКА УЖЕ БЫЛА ИЗМЕНЕНА
-    }
 
     @Override
     public void update(float deltaTime) {

@@ -9,29 +9,7 @@ import java.util.List;
  */
 public class UnitDinoRider extends GameObject {
 
-    private GameObject currentTarget;
-
-    // настройки динозавра (сильнее лучника)
-    private static final float DINO_SPEED = 4f;
-    private static final float DINO_ATTACK_RANGE = 300f;
-    private static final float DINO_ATTACK_COOLDOWN = 1.5f;
-    private static final int DINO_DAMAGE = 40;
-    private static final int DINO_HEALTH = 200;
     private static final float SPEAR_SPEED = 600f;
-
-    public UnitDinoRider() {
-        this.fraction = 2;
-    }
-
-    public UnitDinoRider(int id, float x, float y, int size, float speed) {
-        super(id, x, y, size, DINO_SPEED, new Color(100, 180, 100));
-        attackRange = DINO_ATTACK_RANGE;
-        attackCooldown = DINO_ATTACK_COOLDOWN;
-        lastAttackTime = -5f;
-        attackDamage = DINO_DAMAGE;
-        health = DINO_HEALTH;
-        fraction = 2;
-    }
 
     @Override
     public void update(float deltaTime) {

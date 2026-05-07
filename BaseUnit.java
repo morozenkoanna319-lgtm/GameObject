@@ -4,26 +4,6 @@ import java.util.List;
 
 public class BaseUnit extends GameObject {
 
-    private static final float BASE_SPEED = 150f;
-    private static final float BASE_ATTACK_COOLDOWN = 1f;
-    private float lastAttackTime = -5f;
-
-
-    private static final float TOWER_X = 500;
-    private static final float TOWER_Y = 300;
-
-    public BaseUnit() {
-        this.fraction = 2;
-    }
-
-    public BaseUnit(int id, float x, float y, int size, float speed) {
-        super(id, x, y, size, BASE_SPEED, Color.BLACK);
-        attackCooldown = BASE_ATTACK_COOLDOWN;
-        attackDamage = 50;  // УВЕЛИЧИЛ УРОН
-        health = 100;
-        fraction = 2;
-    }
-
     public void setEngine(Engine engine) {
         this.engine = engine;
     }

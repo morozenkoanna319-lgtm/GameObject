@@ -3,48 +3,6 @@ import java.util.List;
 
 public class UnitGunner extends GameObject {
 
-    // Константы для логики
-    private static final int ATTACK_RANGE = 200;
-    private static final int DAMAGE = 15;
-    private static final int ATTACK_COOLDOWN_MS = 1000;
-    private static final float MOVE_SPEED = 80f;
-    private static final int MAX_HEALTH = 50;
-
-    private GameObject target;
-    private transient Engine engine;
-    private int currentHealth;
-
-    public UnitGunner() {
-        super(0, 0, 0, 50, 0, null);
-        this.id = -1;
-        this.currentHealth = MAX_HEALTH;
-        this.health = MAX_HEALTH;
-        this.isAlive = true;
-        this.fraction = 1;
-        this.lastAttackTime = 0;
-        this.target = null;
-        // Спавн у правого края (x = 750, ширина окна 800)
-        this.x = 750;
-        this.y = 300;
-    }
-
-    public UnitGunner(int id, float x, float y, int size, float speed) {
-        super(id, x, y, size, speed, null);
-        this.currentHealth = MAX_HEALTH;
-        this.health = MAX_HEALTH;
-        this.isAlive = true;
-        this.fraction = 1;
-        this.lastAttackTime = 0;
-        this.target = null;
-        // Если x и y не заданы или равны 0 - спавним у правого края
-        if (x <= 0) {
-            this.x = 750;
-        }
-        if (y <= 0) {
-            this.y = 300;
-        }
-    }
-
     @Override
     protected void update(float deltaTime) {
         super.update(deltaTime);
@@ -72,26 +30,8 @@ public class UnitGunner extends GameObject {
         }
     }
 
-    private void attack() {
-        if (target == null || !target.isAlive()) return;
-
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastAttackTime >= ATTACK_COOLDOWN_MS) {
-            target.takeDamage(DAMAGE);
-            lastAttackTime = currentTime;
-            System.out.println("Ганнер АТАКУЕТ " + target.getClass().getSimpleName() +
-                    "! Урон: " + DAMAGE);
-
-            if (!target.isAlive()) {
-                System.out.println("💀 " + target.getClass().getSimpleName() + " убит!");
-                target = null;
-            }
-        }
-    }
-
     public void setX(float x) { this.x = x; }
     public void setY(float y) { this.y = y; }
-    public int getCurrentHealth() { return currentHealth; }
 
     @Override
     public float getX() { return x; }
@@ -151,20 +91,6 @@ public class UnitGunner extends GameObject {
         g2.fillRoundRect(x + 41, y + 46, 5, 7, 2, 2);
         g2.setColor(Color.BLACK);
         g2.drawRoundRect(x + 41, y + 46, 5, 7, 2, 2);
-
-        g2.setColor(Color.RED);
-        g2.fillRect(x + 40, y - 5, 50, 5);
-        g2.setColor(Color.GREEN);
-        int healthPercent = (int)((float)currentHealth / MAX_HEALTH * 50);
-        g2.fillRect(x + 40, y - 5, healthPercent, 5);
-        g2.setColor(Color.BLACK);
-        g2.drawRect(x + 40, y - 5, 50, 5);
-
-        if (target != null && target.isAlive()) {
-            g2.setColor(Color.RED);
-            g2.drawLine(x + 60, y + 25, (int)target.getX(), (int)target.getY());
-        }
-
 
     }
 }
