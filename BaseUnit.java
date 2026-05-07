@@ -163,9 +163,4 @@ public class BaseUnit extends GameObject {
         this.y = y + 40;
         draw(g);
     }
-
-    @Override
-    public void takeDamage(int damage) {
-
-    }
 }
