@@ -88,16 +88,6 @@ public class UnitDinoRider extends GameObject {
     }
 
     @Override
-    public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            health = 0;
-            isAlive = false;
-            System.out.println("Всадник на динозавре убит!");
-        }
-    }
-
-    @Override
     public void draw(Graphics g) {
         int x = (int) this.x;
         int y = (int) this.y;

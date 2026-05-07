@@ -173,13 +173,4 @@ public class UnitArcher extends GameObject {
         this.y = y;
         draw(g);
     }
-
-    @Override
-    public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            health = 0;
-            isAlive = false;
-        }
-    }
 }

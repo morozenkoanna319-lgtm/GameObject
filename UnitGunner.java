@@ -143,18 +143,6 @@ public class UnitGunner extends GameObject {
         }
     }
 
-    @Override
-    public void takeDamage(int damage) {
-        this.currentHealth -= damage;
-        this.health = this.currentHealth;
-        System.out.println("Ганнер получил урон: " + damage + ", HP: " + currentHealth);
-
-        if (this.currentHealth <= 0) {
-            this.isAlive = false;
-            System.out.println("Ганнер уничтожен!");
-        }
-    }
-
     public void setX(float x) { this.x = x; }
     public void setY(float y) { this.y = y; }
     public void setEngine(Engine engine) { this.engine = engine; }
