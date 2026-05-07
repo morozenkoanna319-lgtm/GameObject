@@ -17,6 +17,8 @@ public class GameObject implements Cloneable, Icon {
     protected float y;
     protected int size;
     protected float speed;
+    protected float speedTemp;
+
     protected Color color;
     protected int health;
     protected int attackDamage;
@@ -27,6 +29,7 @@ public class GameObject implements Cloneable, Icon {
     protected boolean isAlive = true;
     protected int direction = 1;
     protected Engine engine = Engine.getInstance();
+
 
     /**
      * Конструктор по умолчанию.
@@ -386,11 +389,16 @@ public class GameObject implements Cloneable, Icon {
                 '}';
     }
 
-    public void start(float moveSpeed) {
-        this.speed = moveSpeed;
+    public void start() {
+        speed = speedTemp;
+        System.out.println(speed);
     }
 
     public void stop() {
-        this.speed = 0f;
+        if (speed != 0) {
+            speedTemp = speed;
+        }
+        System.out.println("stop " + speedTemp);
+        speed = 0;
     }
 }
