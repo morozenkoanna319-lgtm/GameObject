@@ -84,6 +84,83 @@ public class GameObject implements Cloneable, Icon {
         this.size = size;
     }
 
+    public static Builder builder() {
+        return new GameObject().new Builder();
+    }
+
+    public class Builder {
+        private Builder() {}
+
+        public Builder id(int id) {
+            GameObject.this.id = id;
+            return this;
+        }
+
+        public Builder x(float x) {
+            GameObject.this.x = x;
+            return this;
+        }
+
+        public Builder y(float y) {
+            GameObject.this.y = y;
+            return this;
+        }
+
+        public Builder size(int size) {
+            GameObject.this.size = size;
+            return this;
+        }
+
+        public Builder color(Color color) {
+            GameObject.this.color = color;
+            return this;
+        }
+
+        public Builder health(int health) {
+            GameObject.this.health = health;
+            return this;
+        }
+
+        public Builder attackDamage(int attackDamage) {
+            GameObject.this.attackDamage = attackDamage;
+            return this;
+        }
+
+        public Builder attackRange(float attackRange) {
+            GameObject.this.attackRange = attackRange;
+            return this;
+        }
+
+        public Builder attackCooldown(float attackCooldown) {
+            GameObject.this.attackCooldown = attackCooldown;
+            return this;
+        }
+
+        public Builder lastAttackTime(float lastAttackTime) {
+            GameObject.this.lastAttackTime = lastAttackTime;
+            return this;
+        }
+
+        public Builder isAlive(boolean isAlive) {
+            GameObject.this.isAlive = isAlive;
+            return this;
+        }
+
+        public Builder fraction(int fraction) {
+            GameObject.this.fraction = fraction;
+            return this;
+        }
+
+        public Builder direction(int direction) {
+            GameObject.this.direction = direction;
+            return this;
+        }
+
+        public GameObject build() {
+            return GameObject.this;
+        }
+    }
+
     /**
      * Обновляет позицию объекта.
      *
