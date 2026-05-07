@@ -142,21 +142,6 @@ public class BaseUnit extends GameObject {
         drawHealthBar(g2, k);
     }
 
-    private void drawHealthBar(Graphics2D g2d, float k) {
-        int barWidth = 60;
-        int barHeight = 8;
-        int barX = Math.round(x + 5 * k);
-        int barY = Math.round(y - 10 * k);
-        g2d.setColor(Color.RED);
-        g2d.fillRect(barX, barY, barWidth, barHeight);
-        g2d.setColor(Color.GREEN);
-        int healthPercent = (int) ((float) health / 100f * barWidth);
-        healthPercent = Math.max(0, Math.min(barWidth, healthPercent));
-        g2d.fillRect(barX, barY, healthPercent, barHeight);
-        g2d.setColor(Color.BLACK);
-        g2d.drawRect(barX, barY, barWidth, barHeight);
-    }
-
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         this.x = x;

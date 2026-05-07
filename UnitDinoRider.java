@@ -189,26 +189,7 @@ public class UnitDinoRider extends GameObject {
         g2.fillPolygon(xPoints, yPoints, 3);
 
         // полоска здоровья
-        drawHealthBar(g2, x, y, k);
-    }
-
-    private void drawHealthBar(Graphics2D g2d, int x, int y, float k) {
-        int barWidth = 80;
-        int barHeight = 8;
-        int barX = Math.round(x + 10 * k);
-        int barY = Math.round(y - 15 * k);
-
-        g2d.setColor(Color.RED);
-        g2d.fillRect(barX, barY, barWidth, barHeight);
-
-        g2d.setColor(Color.GREEN);
-        int healthPercent = (int) ((float) health / DINO_HEALTH * barWidth);
-        healthPercent = Math.max(0, Math.min(barWidth, healthPercent));
-        g2d.fillRect(barX, barY, healthPercent, barHeight);
-
-        g2d.setColor(Color.BLACK);
-        g2d.setStroke(new BasicStroke(1));
-        g2d.drawRect(barX, barY, barWidth, barHeight);
+        drawHealthBar(g2, k);
     }
 
     @Override
