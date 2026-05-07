@@ -7,43 +7,16 @@ import java.util.List;
  *
  * by Bebron28 & AmericanCoolBoyUSA777
  */
-public class UnitArcher extends GameObject {
+public class UnitArcher extends BaseUnit {
 
     // настройки лучника
     private static final float ARROW_SPEED = 600f;
 
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-        if (!isAlive) return;
-
-        Engine engine = Engine.getInstance();
-        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
-
-        System.out.println(currentTarget);
-        if (currentTarget != null) {
-            float dist = distanceTo(currentTarget);
-
-            if (dist > attackRange) {
-                // движение к башне
-                moveTowards(currentTarget, deltaTime);
-            } else {
-                // атака в радиусе поражения
-                if (canAttack(engine.getGameTime())) {
-                    shootAt(currentTarget);
-                    stop();
-                    lastAttackTime = engine.getGameTime();
-                } else {
-                    start();
-                }
-            }
-        }
-    }
-
     /**
      * Выстрел по цели.
      */
-    private void shootAt(GameObject target) {
+    @Override
+    public void attack(GameObject target, float currentTime) {
         float angle = Arrow.calculateArrowAngle(x, y, target.getX(), target.getY(), ARROW_SPEED);
         Arrow arrow = new Arrow(x, y, angle, ARROW_SPEED);
         arrow.setAttackDamage(attackDamage);
@@ -53,6 +26,9 @@ public class UnitArcher extends GameObject {
 
     @Override
     public void draw(Graphics g) {
+        int x = (int) this.x;
+        int y = (int) this.y;
+
         float k = this.size / 100.0f;
         if (k <= 0) k = 1.0f;
 
@@ -111,10 +87,4 @@ public class UnitArcher extends GameObject {
         drawHealthBar(g2d, k);
     }
 
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        this.x = x;
-        this.y = y;
-        draw(g);
-    }
 }

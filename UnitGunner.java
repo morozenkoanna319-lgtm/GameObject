@@ -1,42 +1,12 @@
 import java.awt.*;
 import java.util.List;
 
-public class UnitGunner extends GameObject {
+public class UnitGunner extends BaseUnit {
 
     @Override
-    protected void update(float deltaTime) {
-        super.update(deltaTime);
-        if (!isAlive) return;
-
-        Engine engine = Engine.getInstance();
-        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
-        System.out.println(currentTarget);
-        if (currentTarget != null) {
-            float dist = distanceTo(currentTarget);
-
-            if (dist > attackRange) {
-                // движение к башне
-                moveTowards(currentTarget, deltaTime);
-            } else {
-                // атака в радиусе поражения
-                if (canAttack(engine.getGameTime())) {
-                    attack(currentTarget, engine.getGameTime());
-                    stop();
-                    lastAttackTime = engine.getGameTime();
-                } else {
-                    start();
-                }
-            }
-        }
+    public void attack(GameObject target, float currentTime) {
+        // todo
     }
-
-    public void setX(float x) { this.x = x; }
-    public void setY(float y) { this.y = y; }
-
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
 
     @Override
     public void draw(Graphics g) {

@@ -110,11 +110,4 @@ public class BaseUnit extends GameObject {
 
         drawHealthBar(g2, k);
     }
-
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        this.x = x;
-        this.y = y + 40;
-        draw(g);
-    }
 }

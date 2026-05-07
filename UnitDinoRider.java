@@ -7,46 +7,14 @@ import java.util.List;
  *
  * by Bebron28 & AmericanCoolBoyUSA777
  */
-public class UnitDinoRider extends GameObject {
-
-    private static final float SPEAR_SPEED = 600f;
-
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-        if (!isAlive) return;
-
-        Engine engine = Engine.getInstance();
-        GameObject currentTarget = engine.findNearestEnemy(this, attackRange);
-        System.out.println(currentTarget);
-        if (currentTarget != null) {
-            float dist = distanceTo(currentTarget);
-
-            if (dist > attackRange) {
-                // движение к башне
-                moveTowards(currentTarget, deltaTime);
-            } else {
-                // атака в радиусе поражения
-                if (canAttack(engine.getGameTime())) {
-                    attack(currentTarget, engine.getGameTime());
-                    stop();
-                    lastAttackTime = engine.getGameTime();
-                } else {
-                    start();
-                }
-            }
-        }
-    }
+public class UnitDinoRider extends BaseUnit {
 
     /**
      * Бросок копья по цели.
      */
-    private void throwSpearAt(GameObject target) {
-        float angle = Arrow.calculateArrowAngle(x, y, target.getX(), target.getY(), SPEAR_SPEED);
-        Arrow spear = new Arrow(x, y, angle, SPEAR_SPEED);
-        spear.setAttackDamage(attackDamage);
-        spear.setFraction(fraction);
-        engine.spawnObject(spear);
+    @Override
+    public void attack(GameObject target, float currentTime) {
+        // todo
     }
 
     @Override
@@ -154,10 +122,4 @@ public class UnitDinoRider extends GameObject {
         drawHealthBar(g2, k);
     }
 
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        this.x = x;
-        this.y = y + 40;
-        draw(g);
-    }
 }
