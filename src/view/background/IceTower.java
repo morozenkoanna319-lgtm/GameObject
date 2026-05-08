@@ -1,16 +1,18 @@
 package src.view.background;
 
+import src.engine.GameObject;
+
 import java.awt.*;
 
-public class Tower39 {
+public class IceTower extends GameObject {
 
 
     // Конструктор по умолчанию
-    public Tower39() {
+    public IceTower() {
     }
 
     // Основной метод рисования башни
-    public void draw(Graphics g, int panelHeight, int panelWidth) {
+    public void draw(Graphics g) {
         // Преобразуем Graphics в Graphics2D для расширенных возможностей
         Graphics2D g2d = (Graphics2D) g;
 
@@ -20,8 +22,8 @@ public class Tower39 {
 
         // ========== ОСНОВНЫЕ ПАРАМЕТРЫ БАШНИ ==========
         int towerHeight = 400;                    // Общая высота башни
-        int baseY = panelHeight - 40;             // Y-координата основания
-        int centerX = panelWidth / 2;             // X-координата центра башни
+        int baseY = 400 - 40;             // Y-координата основания
+        int centerX = 500 / 2;             // X-координата центра башни
 
         // Ширина башни на разных уровнях (сужается кверху)
         int baseWidth = 140;  // Ширина основания
