@@ -11,7 +11,7 @@ import java.util.Objects;
  * Может использоваться как базовый класс для других объектов.
  */
 
-public class GameObject implements Cloneable, Icon {
+public class GameObject implements Cloneable {
     protected int id;
     protected float x;
     protected float y;
@@ -28,14 +28,16 @@ public class GameObject implements Cloneable, Icon {
     protected int fraction;
     protected boolean isAlive = true;
     protected int direction = 1;
+    protected float scale;
     protected Engine engine = Engine.getInstance();
-
 
     /**
      * Конструктор по умолчанию.
      * Создаёт объект с базовыми значениями.
      */
     public GameObject() {
+        scale = this.size / 100.0f;
+        if (scale <= 0) scale = 1.0f;
         id = -1;
         size = 50;
         speed = 0;
@@ -272,21 +274,6 @@ public class GameObject implements Cloneable, Icon {
         g2d.fill(new Rectangle2D.Float(x, y, size, size)); // float coords
     }
 
-    protected void drawHealthBar(Graphics2D g2d, float k) {
-        int barWidth = 60;
-        int barHeight = 8;
-        int barX = Math.round(x + 5 * k);
-        int barY = Math.round(y - 10 * k);
-        g2d.setColor(Color.RED);
-        g2d.fillRect(barX, barY, barWidth, barHeight);
-        g2d.setColor(Color.GREEN);
-        int healthPercent = (int) ((float) health / 100f * barWidth);
-        healthPercent = Math.max(0, Math.min(barWidth, healthPercent));
-        g2d.fillRect(barX, barY, healthPercent, barHeight);
-        g2d.setColor(Color.BLACK);
-        g2d.drawRect(barX, barY, barWidth, barHeight);
-    }
-
     public float getX() {
         return x;
     }
@@ -427,33 +414,6 @@ public class GameObject implements Cloneable, Icon {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
-    }
-
-
-    /**
-     * Отрисовка как иконки.
-     */
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        this.x = x;
-        this.y = y;
-        draw(g);
-    }
-
-    /**
-     * Ширина иконки.
-     */
-    @Override
-    public int getIconWidth() {
-        return size;
-    }
-
-    /**
-     * Высота иконки.
-     */
-    @Override
-    public int getIconHeight() {
-        return size;
     }
 
     /**

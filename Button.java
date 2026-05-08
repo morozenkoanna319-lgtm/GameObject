@@ -14,11 +14,11 @@ public class Button extends JButton {
     private float fillHeight = 0;
     private long cooldownSeconds = 0;
 
-    public Button(String text, Icon icon, Event event) {
+    public Button(String text, MyIcon icon, Event event) {
         this(text, icon, event, 0);
     }
 
-    public Button(String text, Icon icon, Event event, long cooldownSeconds) {
+    public Button(String text, MyIcon icon, Event event, long cooldownSeconds) {
         super(text, icon);
         this.originalEvent = event;
         this.cooldownSeconds = cooldownSeconds;

@@ -38,12 +38,6 @@ public class UnitArcher extends BaseUnit {
 
     @Override
     public void draw(Graphics g) {
-        int x = (int) this.x;
-        int y = (int) this.y;
-
-        float k = this.size / 100.0f;
-        if (k <= 0) k = 1.0f;
-
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -51,52 +45,51 @@ public class UnitArcher extends BaseUnit {
         // голова
         g2d.setColor(new Color(255, 218, 185));
         g2d.fillOval(Math.round(x), Math.round(y),
-                Math.round(70 * k), Math.round(80 * k));
+                Math.round(70 * scale), Math.round(80 * scale));
 
         // глаза
         g2d.setColor(Color.BLACK);
-        g2d.fillOval(Math.round(x + 25 * k), Math.round(y + 30 * k),
-                Math.round(10 * k), Math.round(12 * k));
-        g2d.fillOval(Math.round(x + 50 * k), Math.round(y + 30 * k),
-                Math.round(10 * k), Math.round(12 * k));
+        g2d.fillOval(Math.round(x + 25 * scale), Math.round(y + 30 * scale),
+                Math.round(10 * scale), Math.round(12 * scale));
+        g2d.fillOval(Math.round(x + 50 * scale), Math.round(y + 30 * scale),
+                Math.round(10 * scale), Math.round(12 * scale));
 
         // тело
         g2d.setColor(new Color(70, 130, 180));
-        g2d.fillOval(Math.round(x - 10 * k), Math.round(y + 80 * k),
-                Math.round(90 * k), Math.round(140 * k));
+        g2d.fillOval(Math.round(x - 10 * scale), Math.round(y + 80 * scale),
+                Math.round(90 * scale), Math.round(140 * scale));
 
         // лук (дуга)
         g2d.setColor(new Color(101, 67, 33));
-        g2d.setStroke(new BasicStroke(4.0f * k));
-        g2d.drawArc(Math.round(x + 30 * k), Math.round(y + 50 * k),
-                Math.round(100 * k), Math.round(150 * k),
+        g2d.setStroke(new BasicStroke(4.0f * scale));
+        g2d.drawArc(Math.round(x + 30 * scale), Math.round(y + 50 * scale),
+                Math.round(100 * scale), Math.round(150 * scale),
                 270, 190);
 
         // тетива
         g2d.setColor(Color.BLACK);
-        g2d.setStroke(new BasicStroke(2.0f * k));
-        int bowCenterX = Math.round(x + 80 * k);
-        int bowTopY = Math.round(y + 52 * k);
-        int bowBottomY = Math.round(y + 200 * k);
+        g2d.setStroke(new BasicStroke(2.0f * scale));
+        int bowCenterX = Math.round(x + 80 * scale);
+        int bowTopY = Math.round(y + 52 * scale);
+        int bowBottomY = Math.round(y + 200 * scale);
         g2d.drawLine(bowCenterX, bowTopY, bowCenterX, bowBottomY);
 
         // колчан
         g2d.setColor(new Color(139, 69, 19));
-        g2d.fillRect(Math.round(x - 30 * k), Math.round(y + 100 * k),
-                Math.round(25 * k), Math.round(60 * k));
-        g2d.fillOval(Math.round(x - 30 * k), Math.round(y + 95 * k),
-                Math.round(25 * k), Math.round(20 * k));
+        g2d.fillRect(Math.round(x - 30 * scale), Math.round(y + 100 * scale),
+                Math.round(25 * scale), Math.round(60 * scale));
+        g2d.fillOval(Math.round(x - 30 * scale), Math.round(y + 95 * scale),
+                Math.round(25 * scale), Math.round(20 * scale));
 
         // стрелы в колчане
         g2d.setColor(Color.DARK_GRAY);
         for (int i = 0; i < 3; i++) {
             int yOffset = 110 + i * 15;
-            g2d.drawLine(Math.round(x - 25 * k), Math.round(y + yOffset * k),
-                    Math.round(x - 10 * k), Math.round(y + yOffset * k));
+            g2d.drawLine(Math.round(x - 25 * scale), Math.round(y + yOffset * scale),
+                    Math.round(x - 10 * scale), Math.round(y + yOffset * scale));
         }
 
-        // полоска здоровья
-        drawHealthBar(g2d, k);
+        drawHealthBar(g2d, scale);
     }
 
 }

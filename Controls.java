@@ -12,7 +12,7 @@ public class Controls extends JPanel {
         int fractionFriend = 2;
 
         // Кнопка BaseUnit - 3 у.к.
-        add(new Button("Spawn BaseUnit", new BaseUnit(), () -> {
+        add(new Button("Spawn BaseUnit", new MyIcon(BaseUnit.builder().notVisibleHeathBar().build()), () -> {
             if (currency.spend(3)) {
                 BaseUnit baseUnit = (BaseUnit) BaseUnit.builder()
                         .fraction(fractionFriend)
@@ -27,7 +27,7 @@ public class Controls extends JPanel {
         }));
 
         // Кнопка Archer - 5 у.к.
-        add(new Button("Spawn Archer", new UnitArcher(), () -> {
+        add(new Button("Spawn Archer", new MyIcon(UnitArcher.builder().notVisibleHeathBar().build()), () -> {
             if (currency.spend(5)) {
                 UnitArcher unitArcher = (UnitArcher) UnitArcher.builder()
                         .fraction(fractionFriend)
@@ -45,7 +45,7 @@ public class Controls extends JPanel {
         }));
 
         // Кнопка Tank - 7 у.к.
-        add(new Button("Spawn Tank", new UnitDinoRider(), () -> {
+        add(new Button("Spawn Tank", new MyIcon(UnitDinoRider.builder().notVisibleHeathBar().build()), () -> {
             if (currency.spend(7)) {
                 UnitDinoRider unitDinoRider = (UnitDinoRider) UnitDinoRider.builder()
                         .fraction(fractionFriend)

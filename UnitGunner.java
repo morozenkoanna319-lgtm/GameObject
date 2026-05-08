@@ -30,8 +30,6 @@ public class UnitGunner extends BaseUnit {
 
         int x = (int) this.x;
         int y = (int) this.y;
-        float k = this.size / 100.0f;
-        if (k <= 0) k = 1.0f;
 
         g2.setColor(new Color(55, 120, 14));
         g2.fillOval(x + 45, y + 10, 30, 30);
@@ -76,5 +74,6 @@ public class UnitGunner extends BaseUnit {
         g2.setColor(Color.BLACK);
         g2.drawRoundRect(x + 41, y + 46, 5, 7, 2, 2);
 
+        drawHealthBar(g2, scale);
     }
 }
