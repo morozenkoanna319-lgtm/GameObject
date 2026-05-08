@@ -89,7 +89,7 @@ public class GameObject implements Cloneable, Icon {
     }
 
     public class Builder {
-        private Builder() {}
+        Builder() {}
 
         public Builder id(int id) {
             GameObject.this.id = id;
@@ -108,6 +108,11 @@ public class GameObject implements Cloneable, Icon {
 
         public Builder size(int size) {
             GameObject.this.size = size;
+            return this;
+        }
+
+        public Builder speed(int speed) {
+            GameObject.this.speed = speed;
             return this;
         }
 

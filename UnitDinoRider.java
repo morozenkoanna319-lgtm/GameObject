@@ -9,6 +9,20 @@ import java.util.List;
  */
 public class UnitDinoRider extends BaseUnit {
 
+    public static Builder builder() {
+        return new UnitDinoRider().new Builder();
+    }
+
+    public class Builder extends BaseUnit.Builder {
+        private Builder() {
+            super();
+        }
+
+        public UnitDinoRider build() {
+            return UnitDinoRider.this;
+        }
+    }
+
     /**
      * Бросок копья по цели.
      */

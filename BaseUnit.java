@@ -4,8 +4,18 @@ import java.util.List;
 
 public class BaseUnit extends GameObject {
 
-    public void setEngine(Engine engine) {
-        this.engine = engine;
+    public static Builder builder() {
+        return new BaseUnit().new Builder();
+    }
+
+    public class Builder extends GameObject.Builder {
+        Builder() {
+            super();
+        }
+
+        public BaseUnit build() {
+            return BaseUnit.this;
+        }
     }
 
     @Override

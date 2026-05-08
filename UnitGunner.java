@@ -3,6 +3,20 @@ import java.util.List;
 
 public class UnitGunner extends BaseUnit {
 
+    public static Builder builder() {
+        return new UnitGunner().new Builder();
+    }
+
+    public class Builder extends BaseUnit.Builder {
+        private Builder() {
+            super();
+        }
+
+        public UnitGunner build() {
+            return UnitGunner.this;
+        }
+    }
+
     @Override
     public void attack(GameObject target, float currentTime) {
         // todo

@@ -9,29 +9,35 @@ public class Controls extends JPanel {
         setLayout(new FlowLayout());
         int playerTowerX = game.getScreenWidth() / 2 - 200;
         int playerSpawnX = playerTowerX + 80;
+        int fractionFriend = 2;
 
         // Кнопка BaseUnit - 3 у.к.
         add(new Button("Spawn BaseUnit", new BaseUnit(), () -> {
-            BaseUnit baseUnit = new BaseUnit();
-            baseUnit.setFraction(0);
-            baseUnit.setX(playerSpawnX);
-            baseUnit.setY(game.getScreenHeight() - 150);
-            baseUnit.setSize(90);
-            baseUnit.setEngine(game);
-            game.spawnObject(baseUnit);
+            if (currency.spend(3)) {
+                BaseUnit baseUnit = (BaseUnit) BaseUnit.builder()
+                        .fraction(fractionFriend)
+                        .speed(1)
+                        .attackRange(130)
+                        .x(playerSpawnX)
+                        .y(game.getScreenHeight() - 150)
+                        .size(90)
+                        .build();
+                game.spawnObject(baseUnit);
+            }
         }));
 
         // Кнопка Archer - 5 у.к.
         add(new Button("Spawn Archer", new UnitArcher(), () -> {
             if (currency.spend(5)) {
-                UnitArcher unitArcher = new UnitArcher();
-                unitArcher.setFraction(0);
-                unitArcher.setX(playerSpawnX);
-                unitArcher.setAttackRange(250);
-                unitArcher.setSize(50);
-                unitArcher.setY(game.getScreenHeight() - 250);
-                unitArcher.setSpeed(1);
-                unitArcher.setDirection(1);
+                UnitArcher unitArcher = (UnitArcher) UnitArcher.builder()
+                        .fraction(fractionFriend)
+                        .speed(1)
+                        .attackRange(250)
+                        .x(playerSpawnX)
+                        .y(game.getScreenHeight() - 250)
+                        .size(50)
+                        .build();
+
                 game.spawnObject(unitArcher);
             } else {
                 System.out.println(" Не хватает валюты! Нужно 5 у.к.");
@@ -41,13 +47,14 @@ public class Controls extends JPanel {
         // Кнопка Tank - 7 у.к.
         add(new Button("Spawn Tank", new UnitDinoRider(), () -> {
             if (currency.spend(7)) {
-                UnitDinoRider unitDinoRider = new UnitDinoRider();
-                unitDinoRider.setFraction(0);
-                unitDinoRider.setX(playerSpawnX);
-                unitDinoRider.setY(game.getScreenHeight() - 250);
-                unitDinoRider.setSize(100);
-                unitDinoRider.setSpeed(1);
-                unitDinoRider.setDirection(1);
+                UnitDinoRider unitDinoRider = (UnitDinoRider) UnitDinoRider.builder()
+                        .fraction(fractionFriend)
+                        .speed(1)
+                        .attackRange(130)
+                        .x(playerSpawnX)
+                        .y(game.getScreenHeight() - 230)
+                        .size(80)
+                        .build();;
                 game.spawnObject(unitDinoRider);
             } else {
                 System.out.println(" Не хватает валюты! Нужно 7 у.к.");

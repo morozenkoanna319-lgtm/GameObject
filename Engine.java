@@ -13,7 +13,7 @@ public class Engine {
     private final Random random = new Random();
     private static Engine engine = null;
     private float enemySpawnTimer = 0f;
-    private final float ENEMY_SPAWN_INTERVAL = 10f;
+    private final float ENEMY_SPAWN_INTERVAL = 5f;
 
     private Engine() {
     }
@@ -27,8 +27,10 @@ public class Engine {
 
     public void update(float deltaTime) {
         enemySpawnTimer += deltaTime;
+        System.out.println(enemySpawnTimer + " " + ENEMY_SPAWN_INTERVAL);
         if (enemySpawnTimer >= ENEMY_SPAWN_INTERVAL) {
             spawnEnemyMob();
+            System.out.println("enemy!");
             enemySpawnTimer = 0f;
         }
         this.deltaTime = deltaTime;
@@ -227,7 +229,7 @@ public class Engine {
     public float getGameTime() { return gameTime; }
 
     private void spawnEnemyMob() {
-        GameObject enemy = new GameObject(-1, 1600,800, 50, -120f);
+        GameObject enemy = new GameObject(-1, 10,10, 50, 1f);
         enemy.setFraction(1);
         spawnObject(enemy);
 

@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.List;
 
 /**
  * Лучник: спавнится, идёт к башне (посередине карты),
@@ -12,6 +11,19 @@ public class UnitArcher extends BaseUnit {
     // настройки лучника
     private static final float ARROW_SPEED = 600f;
 
+    public static Builder builder() {
+        return new UnitArcher().new Builder();
+    }
+
+    public class Builder extends BaseUnit.Builder {
+        private Builder() {
+            super();
+        }
+
+        public UnitArcher build() {
+            return UnitArcher.this;
+        }
+    }
     /**
      * Выстрел по цели.
      */
